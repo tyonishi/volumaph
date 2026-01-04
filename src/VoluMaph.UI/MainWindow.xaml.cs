@@ -102,10 +102,11 @@ public partial class MainWindow : Window
 
     private void TreeView_SelectedItemChanged(object sender, RoutedPropertyChangedEventArgs<object> e)
     {
-        if (DataContext is MainViewModel viewModel && e.NewValue is FileSystemNode node)
+        if (DataContext is MainViewModel viewModel && e.NewValue is FileSystemNode node && !viewModel.IsScanJustCompleted)
         {
             viewModel.SelectedNode = node;
         }
+        // Do not set SelectedNode when scan is just completed to avoid overriding SelectedNode = root
     }
 
     private void Grid_DragOver(object sender, DragEventArgs e)

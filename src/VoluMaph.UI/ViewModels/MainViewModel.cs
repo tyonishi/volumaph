@@ -33,8 +33,9 @@ public sealed class MainViewModel : ViewModelBase
 
     private FolderNode? _rootFolder;
     private FileSystemNode? _selectedNode;
-    private bool _isScanning;
-    private double _progress;
+     private bool _isScanning;
+     private bool _isScanJustCompleted;
+     private double _progress;
     private string _statusMessage = string.Empty;
     private CancellationTokenSource? _cancellationTokenSource;
     private string _selectedDrive = string.Empty;
@@ -121,6 +122,12 @@ public sealed class MainViewModel : ViewModelBase
             RaisePropertyChanged();
             CommandManager.InvalidateRequerySuggested();
         }
+    }
+
+    public bool IsScanJustCompleted
+    {
+        get => _isScanJustCompleted;
+        private set { _isScanJustCompleted = value; RaisePropertyChanged(); }
     }
 
     public double Progress
@@ -639,12 +646,15 @@ public sealed class MainViewModel : ViewModelBase
 
             var root = await Task.Run(() => _scanner.ScanAsync(path, progress, _cancellationTokenSource.Token), _cancellationTokenSource.Token);
             await Task.Run(() => _analyzer.AggregateFolderSizes(root), _cancellationTokenSource.Token);
-            root?.SortChildren();
-            _visualizationViewModel.RootFolder = root;
-            StatusMessage = "Scan completed.";
-            Progress = 100;
-            ShowToast("Scan completed successfully", "\xE8FB", new SolidColorBrush(Colors.Green));
-            return root;
+             root?.SortChildren();
+             _visualizationViewModel.RootFolder = root;
+             StatusMessage = "Scan completed.";
+             Progress = 100;
+             _isScanJustCompleted = true;
+             SelectedNode = root;
+             _isScanJustCompleted = false;
+             ShowToast("Scan completed successfully", "\xE8FB", new SolidColorBrush(Colors.Green));
+             return root;
         }
         catch (OperationCanceledException)
         {

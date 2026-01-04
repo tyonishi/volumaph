@@ -233,4 +233,36 @@ public class MainViewModelTests : IDisposableTest
             Assert.True(column.IsVisible);
         }
     }
+
+    [Fact]
+    public async Task ExportToCsvCommand_ShouldBeEnabledAfterScanCompletion()
+    {
+        CreateFile("file1.txt", 100);
+        CreateFile("file2.txt", 200);
+
+        await _viewModel.ScanFolderAsync(TestDirectory);
+
+        Assert.True(_viewModel.ExportToCsvCommand.CanExecute(null));
+    }
+
+    [Fact]
+    public async Task ExportToHtmlCommand_ShouldBeEnabledAfterScanCompletion()
+    {
+        CreateFile("file1.txt", 100);
+        CreateFile("file2.txt", 200);
+
+        await _viewModel.ScanFolderAsync(TestDirectory);
+
+        Assert.True(_viewModel.ExportToHtmlCommand.CanExecute(null));
+    }
+
+    [Fact]
+    public async Task ToggleVisualizationCommand_ShouldBeEnabledAfterScanCompletion()
+    {
+        CreateFile("file1.txt", 100);
+
+        await _viewModel.ScanFolderAsync(TestDirectory);
+
+        Assert.True(_viewModel.ToggleVisualizationCommand.CanExecute(null));
+    }
 }
