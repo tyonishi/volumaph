@@ -8,7 +8,7 @@ using VoluMaph.UI.Commands;
 
 namespace VoluMaph.UI.ViewModels;
 
- public sealed class VisualizationViewModel : ViewModelBase
+public sealed class VisualizationViewModel : ViewModelBase
 {
     private FolderNode? _rootFolder;
     private FileSystemNode? _selectedNode;
@@ -105,6 +105,7 @@ namespace VoluMaph.UI.ViewModels;
     public ICommand MaxZoomCommand { get; }
     public ICommand GoBackCommand { get; }
     public ICommand GoForwardCommand { get; }
+    public ICommand ZoomToNodeCommand { get; }
 
     public double ZoomLevel
     {
@@ -158,6 +159,7 @@ namespace VoluMaph.UI.ViewModels;
         MaxZoomCommand = new RelayCommand(_ => MaxZoom(), _ => true);
         GoBackCommand = new RelayCommand(_ => Undo(), _ => CanUndo());
         GoForwardCommand = new RelayCommand(_ => Redo(), _ => CanRedo());
+        ZoomToNodeCommand = new RelayCommand(_ => ZoomToNode(), _ => SelectedNode != null);
 
         _history.PropertyChanged += (s, e) =>
         {
@@ -199,6 +201,20 @@ namespace VoluMaph.UI.ViewModels;
     private void SaveCurrentState()
     {
         _history.AddState(new VisualizationState(ZoomLevel, PanX, PanY, SelectedNode));
+    }
+
+    public void ZoomToNode()
+    {
+        if (SelectedNode == null)
+        {
+            return;
+        }
+
+        var targetZoomLevel = Math.Min(20.0, ZoomLevel * 1.5);
+        ZoomLevel = targetZoomLevel;
+        PanX = 0.0;
+        PanY = 0.0;
+        SaveCurrentState();
     }
 
     public void ToggleVisualizationMode()

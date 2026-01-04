@@ -8,9 +8,9 @@ namespace VoluMaph.UI.Behaviors;
 
 public sealed class ZoomPanBehavior
 {
-    private const double MinZoom = 0.1;
-    private const double MaxZoom = 20.0;
-    private const double ZoomStep = 1.1;
+    internal const double MinZoom = 0.1;
+    internal const double MaxZoom = 20.0;
+    internal const double ZoomStep = 1.1;
 
     public static readonly DependencyProperty IsEnabledProperty =
         DependencyProperty.RegisterAttached(
@@ -120,7 +120,7 @@ public sealed class ZoomPanBehavior
         ZoomAt(state, position.X, position.Y, delta, element);
     }
 
-    private static void ZoomAt(ZoomPanState state, double x, double y, double factor, UIElement element)
+    internal static void ZoomAt(ZoomPanState state, double x, double y, double factor, UIElement element)
     {
         var zoomTarget = GetZoomTarget(element) ?? element;
         var transform = state.Transform;
@@ -187,7 +187,12 @@ public sealed class ZoomPanBehavior
         e.Handled = true;
     }
 
-    private sealed class ZoomPanState
+    internal static ZoomPanState CreateZoomState()
+    {
+        return new ZoomPanState();
+    }
+
+    internal sealed class ZoomPanState
     {
         public TransformGroup Transform { get; set; } = null!;
         public TranslateTransform TranslateTransform { get; set; } = null!;
