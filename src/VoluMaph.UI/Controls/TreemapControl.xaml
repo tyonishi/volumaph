@@ -5,6 +5,17 @@
     xmlns:local="clr-namespace:VoluMaph.UI.Controls">
     <Grid>
         <Border x:Name="ZoomContainer">
+            <Border.ContextMenu>
+                <ContextMenu x:Name="TreemapContextMenu">
+                    <MenuItem x:Name="OpenInExplorerMenuItem"
+                              Header="Open in Explorer" />
+                    <MenuItem x:Name="CopyPathMenuItem"
+                              Header="Copy Path" />
+                    <Separator />
+                    <MenuItem x:Name="PropertiesMenuItem"
+                              Header="Properties" />
+                </ContextMenu>
+            </Border.ContextMenu>
             <Canvas x:Name="TreemapCanvas"
                     ClipToBounds="True" />
         </Border>
@@ -32,14 +43,5 @@
                           TextWrapping="Wrap" />
             </StackPanel>
         </Border>
-        <ContextMenu x:Name="TreemapContextMenu">
-            <MenuItem x:Name="OpenInExplorerMenuItem"
-                      Header="Open in Explorer" />
-            <MenuItem x:Name="CopyPathMenuItem"
-                      Header="Copy Path" />
-            <Separator />
-            <MenuItem x:Name="PropertiesMenuItem"
-                      Header="Properties" />
-        </ContextMenu>
     </Grid>
 </UserControl>
