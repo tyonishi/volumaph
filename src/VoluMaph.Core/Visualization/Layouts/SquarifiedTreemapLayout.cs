@@ -68,13 +68,13 @@ public sealed class SquarifiedTreemapLayout : ITreemapLayout
         {
             var rowWidth = bounds.Width * (rowSize / (double)totalSize);
             var nextBounds = new Rect(bounds.X + rowWidth, bounds.Y, bounds.Width - rowWidth, bounds.Height);
-            Squarify(nodes, bestRowEnd, end, nextBounds, remainingSize, results);
+            Squarify(nodes, bestRowEnd, end, nextBounds, totalSize, results);
         }
         else
         {
             var rowHeight = bounds.Height * (rowSize / (double)totalSize);
             var nextBounds = new Rect(bounds.X, bounds.Y + rowHeight, bounds.Width, bounds.Height - rowHeight);
-            Squarify(nodes, bestRowEnd, end, nextBounds, remainingSize, results);
+            Squarify(nodes, bestRowEnd, end, nextBounds, totalSize, results);
         }
     }
 
@@ -97,7 +97,7 @@ public sealed class SquarifiedTreemapLayout : ITreemapLayout
         for (int i = start; i < end; i++)
         {
             var node = nodes[i];
-            var nodeArea = bounds.Area * (node.Size / (double)totalSize);
+            var nodeArea = rowArea * (node.Size / (double)rowSize);
 
             Rect nodeBounds;
             if (horizontal)
