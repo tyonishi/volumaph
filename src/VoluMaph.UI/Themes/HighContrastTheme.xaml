@@ -1,0 +1,44 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <SolidColorBrush x:Key="WindowBackground" Color="#000000"/>
+    <SolidColorBrush x:Key="ControlBackground" Color="#000000"/>
+    <SolidColorBrush x:Key="TextPrimary" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="TextSecondary" Color="#D0D0D0"/>
+    <SolidColorBrush x:Key="TextDisabled" Color="#808080"/>
+
+    <SolidColorBrush x:Key="PrimaryDefault" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="PrimaryHover" Color="#E0E0E0"/>
+    <SolidColorBrush x:Key="PrimaryPressed" Color="#C0C0C0"/>
+    <SolidColorBrush x:Key="PrimaryDisabled" Color="#404040"/>
+
+    <SolidColorBrush x:Key="SecondaryDefault" Color="#000000"/>
+    <SolidColorBrush x:Key="SecondaryHover" Color="#1A1A1A"/>
+    <SolidColorBrush x:Key="SecondaryPressed" Color="#333333"/>
+
+    <SolidColorBrush x:Key="DangerDefault" Color="#FFFF00"/>
+    <SolidColorBrush x:Key="DangerHover" Color="#E0E000"/>
+    <SolidColorBrush x:Key="DangerPressed" Color="#C0C000"/>
+
+    <SolidColorBrush x:Key="WarningDefault" Color="#FFFF00"/>
+    <SolidColorBrush x:Key="WarningHover" Color="#E0E000"/>
+    <SolidColorBrush x:Key="WarningPressed" Color="#C0C000"/>
+
+    <SolidColorBrush x:Key="SuccessDefault" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="SuccessHover" Color="#E0E0E0"/>
+    <SolidColorBrush x:Key="SuccessPressed" Color="#C0C0C0"/>
+
+    <SolidColorBrush x:Key="InfoDefault" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="InfoHover" Color="#E0E0E0"/>
+    <SolidColorBrush x:Key="InfoPressed" Color="#C0C0C0"/>
+
+    <SolidColorBrush x:Key="BorderDefault" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="BorderHover" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="BorderFocus" Color="#FFFFFF"/>
+
+    <SolidColorBrush x:Key="GridLineBrush" Color="#FFFFFF"/>
+
+    <SolidColorBrush x:Key="Highlight" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="HighlightText" Color="#000000"/>
+
+</ResourceDictionary>

@@ -1,0 +1,377 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <Style x:Key="FocusBorderStyle" TargetType="Control">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Rectangle Margin="-2"
+                               Stroke="{DynamicResource FocusBorderColor}"
+                               StrokeThickness="2"
+                               SnapsToDevicePixels="true"
+                               RadiusX="4"
+                               RadiusY="4"
+                               IsHitTestVisible="false"/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="{DynamicResource PrimaryDefault}"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="12,0,12,0"/>
+        <Setter Property="Margin" Value="4"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Height" Value="32"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusBorderStyle}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="ButtonBorder"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{StaticResource CornerRadius4}"
+                            Padding="{TemplateBinding Padding}"
+                            RenderTransformOrigin="0.5,0.5">
+                        <Border.RenderTransform>
+                            <ScaleTransform x:Name="ButtonScale" ScaleX="1" ScaleY="1"/>
+                        </Border.RenderTransform>
+                        <ContentPresenter x:Name="ContentPresenter"
+                                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                        RecognizesAccessKey="True"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource PrimaryHover}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource PrimaryPressed}"/>
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="ButtonScale"
+                                                         Storyboard.TargetProperty="ScaleX"
+                                                         To="0.95"
+                                                         Duration="0:0:0.1">
+                                            <DoubleAnimation.EasingFunction>
+                                                <BackEase EasingMode="EaseIn" Amplitude="0.5"/>
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="ButtonScale"
+                                                         Storyboard.TargetProperty="ScaleY"
+                                                         To="0.95"
+                                                         Duration="0:0:0.1">
+                                            <DoubleAnimation.EasingFunction>
+                                                <BackEase EasingMode="EaseIn" Amplitude="0.5"/>
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="ButtonScale"
+                                                         Storyboard.TargetProperty="ScaleX"
+                                                         To="1"
+                                                         Duration="0:0:0.15">
+                                            <DoubleAnimation.EasingFunction>
+                                                <BackEase EasingMode="EaseOut" Amplitude="0.3"/>
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="ButtonScale"
+                                                         Storyboard.TargetProperty="ScaleY"
+                                                         To="1"
+                                                         Duration="0:0:0.15">
+                                            <DoubleAnimation.EasingFunction>
+                                                <BackEase EasingMode="EaseOut" Amplitude="0.3"/>
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Background" Value="{DynamicResource PrimaryDisabled}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="SecondaryButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="{DynamicResource SecondaryDefault}"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderDefault}"/>
+        <Setter Property="BorderThickness" Value="1,1,1,1"/>
+        <Setter Property="Padding" Value="12,0,12,0"/>
+        <Setter Property="Margin" Value="4"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Height" Value="32"/>
+        <Setter Property="FontWeight" Value="Normal"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusBorderStyle}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="ButtonBorder"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{StaticResource CornerRadius4}"
+                            Padding="{TemplateBinding Padding}"
+                            RenderTransformOrigin="0.5,0.5">
+                        <Border.RenderTransform>
+                            <ScaleTransform x:Name="ButtonScale" ScaleX="1" ScaleY="1"/>
+                        </Border.RenderTransform>
+                        <ContentPresenter x:Name="ContentPresenter"
+                                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                        RecognizesAccessKey="True"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource SecondaryHover}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource SecondaryPressed}"/>
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="ButtonScale"
+                                                         Storyboard.TargetProperty="ScaleX"
+                                                         To="0.95"
+                                                         Duration="0:0:0.1">
+                                            <DoubleAnimation.EasingFunction>
+                                                <BackEase EasingMode="EaseIn" Amplitude="0.5"/>
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="ButtonScale"
+                                                         Storyboard.TargetProperty="ScaleY"
+                                                         To="0.95"
+                                                         Duration="0:0:0.1">
+                                            <DoubleAnimation.EasingFunction>
+                                                <BackEase EasingMode="EaseIn" Amplitude="0.5"/>
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="ButtonScale"
+                                                         Storyboard.TargetProperty="ScaleX"
+                                                         To="1"
+                                                         Duration="0:0:0.15">
+                                            <DoubleAnimation.EasingFunction>
+                                                <BackEase EasingMode="EaseOut" Amplitude="0.3"/>
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="ButtonScale"
+                                                         Storyboard.TargetProperty="ScaleY"
+                                                         To="1"
+                                                         Duration="0:0:0.15">
+                                            <DoubleAnimation.EasingFunction>
+                                                <BackEase EasingMode="EaseOut" Amplitude="0.3"/>
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Opacity" Value="0.5"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="DangerButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="{DynamicResource DangerDefault}"/>
+        <Setter Property="Foreground" Value="White"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="12,0,12,0"/>
+        <Setter Property="Margin" Value="4"/>
+        <Setter Property="FontSize" Value="14"/>
+        <Setter Property="Height" Value="32"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusBorderStyle}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="ButtonBorder"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{StaticResource CornerRadius4}"
+                            Padding="{TemplateBinding Padding}"
+                            RenderTransformOrigin="0.5,0.5">
+                        <Border.RenderTransform>
+                            <ScaleTransform x:Name="ButtonScale" ScaleX="1" ScaleY="1"/>
+                        </Border.RenderTransform>
+                        <ContentPresenter x:Name="ContentPresenter"
+                                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                        RecognizesAccessKey="True"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource DangerHover}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource DangerPressed}"/>
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="ButtonScale"
+                                                         Storyboard.TargetProperty="ScaleX"
+                                                         To="0.95"
+                                                         Duration="0:0:0.1">
+                                            <DoubleAnimation.EasingFunction>
+                                                <BackEase EasingMode="EaseIn" Amplitude="0.5"/>
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="ButtonScale"
+                                                         Storyboard.TargetProperty="ScaleY"
+                                                         To="0.95"
+                                                         Duration="0:0:0.1">
+                                            <DoubleAnimation.EasingFunction>
+                                                <BackEase EasingMode="EaseIn" Amplitude="0.5"/>
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="ButtonScale"
+                                                         Storyboard.TargetProperty="ScaleX"
+                                                         To="1"
+                                                         Duration="0:0:0.15">
+                                            <DoubleAnimation.EasingFunction>
+                                                <BackEase EasingMode="EaseOut" Amplitude="0.3"/>
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="ButtonScale"
+                                                         Storyboard.TargetProperty="ScaleY"
+                                                         To="1"
+                                                         Duration="0:0:0.15">
+                                            <DoubleAnimation.EasingFunction>
+                                                <BackEase EasingMode="EaseOut" Amplitude="0.3"/>
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Background" Value="{DynamicResource PrimaryDisabled}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="IconButtonStyle" TargetType="Button">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextPrimary}"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="Padding" Value="8,8,8,8"/>
+        <Setter Property="Margin" Value="4"/>
+        <Setter Property="FontSize" Value="24"/>
+        <Setter Property="Width" Value="36"/>
+        <Setter Property="Height" Value="36"/>
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="FocusVisualStyle" Value="{StaticResource FocusBorderStyle}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="ButtonBorder"
+                            Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{StaticResource CornerRadius4}"
+                            Padding="{TemplateBinding Padding}"
+                            RenderTransformOrigin="0.5,0.5">
+                        <Border.RenderTransform>
+                            <ScaleTransform x:Name="ButtonScale" ScaleX="1" ScaleY="1"/>
+                        </Border.RenderTransform>
+                        <ContentPresenter x:Name="ContentPresenter"
+                                        HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                        VerticalAlignment="{TemplateBinding VerticalContentAlignment}"
+                                        RecognizesAccessKey="True"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource SecondaryHover}"/>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource SecondaryPressed}"/>
+                            <Trigger.EnterActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="ButtonScale"
+                                                         Storyboard.TargetProperty="ScaleX"
+                                                         To="0.9"
+                                                         Duration="0:0:0.1">
+                                            <DoubleAnimation.EasingFunction>
+                                                <BackEase EasingMode="EaseIn" Amplitude="0.5"/>
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="ButtonScale"
+                                                         Storyboard.TargetProperty="ScaleY"
+                                                         To="0.9"
+                                                         Duration="0:0:0.1">
+                                            <DoubleAnimation.EasingFunction>
+                                                <BackEase EasingMode="EaseIn" Amplitude="0.5"/>
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.EnterActions>
+                            <Trigger.ExitActions>
+                                <BeginStoryboard>
+                                    <Storyboard>
+                                        <DoubleAnimation Storyboard.TargetName="ButtonScale"
+                                                         Storyboard.TargetProperty="ScaleX"
+                                                         To="1"
+                                                         Duration="0:0:0.15">
+                                            <DoubleAnimation.EasingFunction>
+                                                <BackEase EasingMode="EaseOut" Amplitude="0.3"/>
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                        <DoubleAnimation Storyboard.TargetName="ButtonScale"
+                                                         Storyboard.TargetProperty="ScaleY"
+                                                         To="1"
+                                                         Duration="0:0:0.15">
+                                            <DoubleAnimation.EasingFunction>
+                                                <BackEase EasingMode="EaseOut" Amplitude="0.3"/>
+                                            </DoubleAnimation.EasingFunction>
+                                        </DoubleAnimation>
+                                    </Storyboard>
+                                </BeginStoryboard>
+                            </Trigger.ExitActions>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>
