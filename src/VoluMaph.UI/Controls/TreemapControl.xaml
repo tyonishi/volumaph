@@ -4,12 +4,42 @@
     xmlns:ui="clr-namespace:VoluMaph.UI.Behaviors"
     xmlns:local="clr-namespace:VoluMaph.UI.Controls">
     <Grid>
-        <Border x:Name="ZoomContainer"
-                Background="{Binding Background, RelativeSource={RelativeSource AncestorType=local:TreemapControl}}"
-                BorderBrush="{Binding BorderBrush, RelativeSource={RelativeSource AncestorType=local:TreemapControl}}"
-                BorderThickness="{Binding BorderThickness, RelativeSource={RelativeSource AncestorType=local:TreemapControl}}">
+        <Border x:Name="ZoomContainer">
             <Canvas x:Name="TreemapCanvas"
                     ClipToBounds="True" />
         </Border>
+        <Border x:Name="TooltipBorder"
+                Background="#CC000000"
+                BorderBrush="#FFCCCCCC"
+                BorderThickness="1"
+                CornerRadius="4"
+                Padding="8"
+                Visibility="Collapsed"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top">
+            <StackPanel>
+                <TextBlock x:Name="TooltipName"
+                          Foreground="White"
+                          FontWeight="Bold"
+                          TextWrapping="Wrap" />
+                <TextBlock x:Name="TooltipSize"
+                          Foreground="White"
+                          Margin="0,4,0,0" />
+                <TextBlock x:Name="TooltipPath"
+                          Foreground="LightGray"
+                          FontSize="11"
+                          Margin="0,2,0,0"
+                          TextWrapping="Wrap" />
+            </StackPanel>
+        </Border>
+        <ContextMenu x:Name="TreemapContextMenu">
+            <MenuItem x:Name="OpenInExplorerMenuItem"
+                      Header="Open in Explorer" />
+            <MenuItem x:Name="CopyPathMenuItem"
+                      Header="Copy Path" />
+            <Separator />
+            <MenuItem x:Name="PropertiesMenuItem"
+                      Header="Properties" />
+        </ContextMenu>
     </Grid>
 </UserControl>
