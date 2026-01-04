@@ -14,14 +14,15 @@ public class BoolToVisibilityConverter : IValueConverter
     /// </summary>
     /// <param name="value">The boolean value to convert.</param>
     /// <param name="targetType">The target type.</param>
-    /// <param name="parameter">The converter parameter.</param>
+    /// <param name="parameter">The converter parameter. Use "Inverse" to reverse the logic.</param>
     /// <param name="culture">The culture information.</param>
     /// <returns>Visibility.Visible if true; otherwise, Visibility.Collapsed.</returns>
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
     {
         if (value is bool boolValue)
         {
-            return boolValue ? Visibility.Visible : Visibility.Collapsed;
+            var inverse = parameter is string param && param.Equals("Inverse", StringComparison.OrdinalIgnoreCase);
+            return boolValue != inverse ? Visibility.Visible : Visibility.Collapsed;
         }
         return Visibility.Collapsed;
     }

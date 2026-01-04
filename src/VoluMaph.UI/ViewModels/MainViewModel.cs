@@ -29,6 +29,7 @@ public sealed class MainViewModel : ViewModelBase
     private readonly IDuplicateDetector _duplicateDetector;
     private readonly ISettingsProvider _settingsProvider;
     private readonly ILogger _logger;
+    private readonly VisualizationViewModel _visualizationViewModel;
 
     private FolderNode? _rootFolder;
     private FileSystemNode? _selectedNode;
@@ -51,6 +52,7 @@ public sealed class MainViewModel : ViewModelBase
     private string _sortColumn = "Size";
     private ListSortDirection _sortDirection = ListSortDirection.Descending;
     private ColorTheme _colorTheme = ColorTheme.Heatmap;
+    private bool _showVisualization = false;
 
     public sealed class ColumnDefinition
     {
@@ -66,6 +68,7 @@ public sealed class MainViewModel : ViewModelBase
     public ObservableCollection<string> AvailableDrives { get; } = new();
     public ObservableCollection<ColorTheme> AvailableColorThemes { get; } = new();
     public ObservableCollection<FileSystemNode> CurrentChildren => _currentChildren;
+    public VisualizationViewModel VisualizationViewModel => _visualizationViewModel;
     public ICollectionView ChildrenView
     {
         get
@@ -177,6 +180,20 @@ public sealed class MainViewModel : ViewModelBase
             if (_colorTheme != value)
             {
                 _colorTheme = value;
+                _visualizationViewModel.ColorTheme = value;
+                RaisePropertyChanged();
+            }
+        }
+    }
+
+    public bool ShowVisualization
+    {
+        get => _showVisualization;
+        set
+        {
+            if (_showVisualization != value)
+            {
+                _showVisualization = value;
                 RaisePropertyChanged();
             }
         }
@@ -387,6 +404,7 @@ public sealed class MainViewModel : ViewModelBase
     public ICommand DetectDuplicatesBySizeCommand { get; } = default!;
     public ICommand DetectDuplicatesByHashCommand { get; } = default!;
     public ICommand ClearFiltersCommand { get; } = default!;
+    public ICommand ToggleVisualizationCommand { get; } = default!;
 
     private void ShowToast(string message, string icon = "\xE8FB", Brush? iconColor = null)
     {
@@ -408,6 +426,7 @@ public sealed class MainViewModel : ViewModelBase
         _settingsProvider = settingsProvider;
         _logger = logger;
         _currentChildren = new ObservableCollection<FileSystemNode>();
+        _visualizationViewModel = new VisualizationViewModel();
 
         InitializeColumnDefinitions();
         InitializeColorThemes();
@@ -430,6 +449,7 @@ public sealed class MainViewModel : ViewModelBase
         DetectDuplicatesBySizeCommand = new AsyncRelayCommand(async _ => await DetectDuplicatesBySizeAsync(), _ => !IsScanning && RootFolder != null);
         DetectDuplicatesByHashCommand = new AsyncRelayCommand(async _ => await DetectDuplicatesByHashAsync(), _ => !IsScanning && RootFolder != null);
         ClearFiltersCommand = new RelayCommand(_ => ClearFilters());
+        ToggleVisualizationCommand = new RelayCommand(_ => ToggleVisualization(), _ => RootFolder != null);
     }
 
     private void InitializeColumnDefinitions()
@@ -620,6 +640,7 @@ public sealed class MainViewModel : ViewModelBase
             var root = await Task.Run(() => _scanner.ScanAsync(path, progress, _cancellationTokenSource.Token), _cancellationTokenSource.Token);
             await Task.Run(() => _analyzer.AggregateFolderSizes(root), _cancellationTokenSource.Token);
             root?.SortChildren();
+            _visualizationViewModel.RootFolder = root;
             StatusMessage = "Scan completed.";
             Progress = 100;
             ShowToast("Scan completed successfully", "\xE8FB", new SolidColorBrush(Colors.Green));
@@ -1007,6 +1028,12 @@ public sealed class MainViewModel : ViewModelBase
         CreatedBeforeDays = null;
         SearchText = string.Empty;
         StatusMessage = "Filters cleared.";
+    }
+
+    private void ToggleVisualization()
+    {
+        ShowVisualization = !ShowVisualization;
+        StatusMessage = ShowVisualization ? "Visualization enabled" : "Visualization disabled";
     }
 
     private static int CountFiles(FolderNode folder)

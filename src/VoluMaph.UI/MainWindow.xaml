@@ -106,6 +106,18 @@
                     <TextBlock Text="Theme"/>
                 </StackPanel>
             </Button>
+
+            <Separator/>
+
+            <Button Command="{Binding ToggleVisualizationCommand}" Style="{StaticResource SecondaryButtonStyle}" Margin="4"
+                     AutomationProperties.Name="Toggle Visualization Button"
+                     AutomationProperties.HelpText="Toggle visualization panel"
+                     ToolTip="Toggle visualization panel (Treemap/Sunburst)">
+                <StackPanel Orientation="Horizontal">
+                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="20" Margin="0,0,8,0" Text="{x:Static helpers:FluentIcons.Chart}"/>
+                    <TextBlock Text="Visualization"/>
+                </StackPanel>
+            </Button>
             <ComboBox Width="140" ItemsSource="{Binding AvailableColorThemes}" SelectedItem="{Binding ColorTheme}" Background="{DynamicResource ControlBackground}" Foreground="{DynamicResource TextPrimary}" BorderBrush="{DynamicResource BorderDefault}" BorderThickness="1" Padding="8" Style="{StaticResource FluentComboBoxStyle}"
                       AutomationProperties.Name="Color Theme Selection"
                       AutomationProperties.HelpText="Select color theme for visualization"
@@ -248,21 +260,28 @@
  				</TreeView.ItemTemplate>
 			</TreeView>
 
-      <DataGrid Grid.Column="2"
-                      x:Name="MainDataGrid"
-                      ItemsSource="{Binding ChildrenView}"
-                      AutoGenerateColumns="False"
-                      Background="{DynamicResource WindowBackground}"
-                      Foreground="{DynamicResource TextPrimary}"
-                      Style="{StaticResource FluentDataGridStyle}"
-                      ColumnHeaderStyle="{StaticResource FluentDataGridColumnHeaderStyle}"
-                      CellStyle="{StaticResource FluentDataGridCellStyle}"
-                      RowStyle="{StaticResource FluentDataGridRowStyle}"
-                      Sorting="MainDataGrid_Sorting"
-                      IsReadOnly="True"
-                      AutomationProperties.Name="File Data Grid"
-                      AutomationProperties.HelpText="Displays files and folders with sortable columns"
-                      ToolTip="View files and folders - Right-click for options, click headers to sort">
+       <Grid Grid.Column="2">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <DataGrid Grid.Row="0"
+                        x:Name="MainDataGrid"
+                        ItemsSource="{Binding ChildrenView}"
+                        AutoGenerateColumns="False"
+                        Background="{DynamicResource WindowBackground}"
+                        Foreground="{DynamicResource TextPrimary}"
+                        Style="{StaticResource FluentDataGridStyle}"
+                        ColumnHeaderStyle="{StaticResource FluentDataGridColumnHeaderStyle}"
+                        CellStyle="{StaticResource FluentDataGridCellStyle}"
+                        RowStyle="{StaticResource FluentDataGridRowStyle}"
+                        Sorting="MainDataGrid_Sorting"
+                        IsReadOnly="True"
+                        AutomationProperties.Name="File Data Grid"
+                        AutomationProperties.HelpText="Displays files and folders with sortable columns"
+                        ToolTip="View files and folders - Right-click for options, click headers to sort"
+                        Visibility="{Binding ShowVisualization, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Inverse}">
 				<DataGrid.ContextMenu>
 					<ContextMenu Background="{DynamicResource ControlBackground}" Foreground="{DynamicResource TextPrimary}"
                                 AutomationProperties.Name="Context Menu"
@@ -285,30 +304,79 @@
                                   ToolTip="Export current view to HTML file"/>
 					</ContextMenu>
 				</DataGrid.ContextMenu>
- 				<DataGrid.Columns>
- 					<DataGridTextColumn Header="Name" Binding="{Binding Name}" SortMemberPath="Name" Width="*" Visibility="Visible">
- 						<DataGridTextColumn.ElementStyle>
- 							<Style TargetType="TextBlock" BasedOn="{StaticResource BodyTextStyle}">
- 								<Setter Property="Text" Value="{Binding Name, Converter={StaticResource IconConverter}, StringFormat={}{0}  }"/>
- 							</Style>
- 						</DataGridTextColumn.ElementStyle>
- 					</DataGridTextColumn>
-  					<DataGridTextColumn Header="Size" Binding="{Binding Size, Converter={StaticResource SizeConverter}}" SortMemberPath="Size" Width="120" Visibility="Visible">
+  				<DataGrid.Columns>
+  					<DataGridTextColumn Header="Name" Binding="{Binding Name}" SortMemberPath="Name" Width="*" Visibility="Visible">
   						<DataGridTextColumn.ElementStyle>
-  							<Style TargetType="TextBlock" BasedOn="{StaticResource SizeCellStyle}">
-  								<Setter Property="TextAlignment" Value="Right"/>
-  								<Setter Property="Margin" Value="0,0,12,0"/>
+  							<Style TargetType="TextBlock" BasedOn="{StaticResource BodyTextStyle}">
+  								<Setter Property="Text" Value="{Binding Name, Converter={StaticResource IconConverter}, StringFormat={}{0}  }"/>
   							</Style>
   						</DataGridTextColumn.ElementStyle>
+  					</DataGridTextColumn>
+   					<DataGridTextColumn Header="Size" Binding="{Binding Size, Converter={StaticResource SizeConverter}}" SortMemberPath="Size" Width="120" Visibility="Visible">
+   						<DataGridTextColumn.ElementStyle>
+   							<Style TargetType="TextBlock" BasedOn="{StaticResource SizeCellStyle}">
+   								<Setter Property="TextAlignment" Value="Right"/>
+   								<Setter Property="Margin" Value="0,0,12,0"/>
+   							</Style>
+   						</DataGridTextColumn.ElementStyle>
                         <DataGridColumn.SortDirection>Descending</DataGridColumn.SortDirection>
-  					</DataGridTextColumn>
-  					<DataGridTextColumn Header="Path" Binding="{Binding FullPath, Mode=OneWay}" SortMemberPath="FullPath" Width="*" Visibility="Visible" IsReadOnly="True">
-  						<DataGridTextColumn.ElementStyle>
-  							<Style TargetType="TextBlock" BasedOn="{StaticResource BodyTextStyle}"/>
-  						</DataGridTextColumn.ElementStyle>
-  					</DataGridTextColumn>
- 				</DataGrid.Columns>
+   					</DataGridTextColumn>
+   					<DataGridTextColumn Header="Path" Binding="{Binding FullPath, Mode=OneWay}" SortMemberPath="FullPath" Width="*" Visibility="Visible" IsReadOnly="True">
+   						<DataGridTextColumn.ElementStyle>
+   							<Style TargetType="TextBlock" BasedOn="{StaticResource BodyTextStyle}"/>
+   						</DataGridTextColumn.ElementStyle>
+   					</DataGridTextColumn>
+  				</DataGrid.Columns>
 			</DataGrid>
+
+                <Grid Grid.Row="0" Visibility="{Binding ShowVisualization, Converter={StaticResource BoolToVisibilityConverter}}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Margin="0,0,0,8">
+                        <Button Content="Treemap" Command="{Binding VisualizationViewModel.ToggleVisualizationModeCommand}"
+                                Style="{StaticResource SecondaryButtonStyle}" Margin="4"
+                                IsEnabled="{Binding VisualizationViewModel.IsSunburstMode}"
+                                AutomationProperties.Name="Treemap Button"
+                                AutomationProperties.HelpText="Switch to treemap visualization"/>
+                        <Button Content="Sunburst" Command="{Binding VisualizationViewModel.ToggleVisualizationModeCommand}"
+                                Style="{StaticResource SecondaryButtonStyle}" Margin="4"
+                                Visibility="{Binding VisualizationViewModel.IsSunburstMode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Inverse}"
+                                AutomationProperties.Name="Sunburst Button"
+                                AutomationProperties.HelpText="Switch to sunburst visualization"/>
+                        <Button Content="Zoom In" Command="{Binding VisualizationViewModel.ZoomInCommand}"
+                                Style="{StaticResource SecondaryButtonStyle}" Margin="4"
+                                AutomationProperties.Name="Zoom In Button"
+                                AutomationProperties.HelpText="Zoom in"/>
+                        <Button Content="Zoom Out" Command="{Binding VisualizationViewModel.ZoomOutCommand}"
+                                Style="{StaticResource SecondaryButtonStyle}" Margin="4"
+                                AutomationProperties.Name="Zoom Out Button"
+                                AutomationProperties.HelpText="Zoom out"/>
+                        <Button Content="Reset Zoom" Command="{Binding VisualizationViewModel.ResetZoomCommand}"
+                                Style="{StaticResource SecondaryButtonStyle}" Margin="4"
+                                AutomationProperties.Name="Reset Zoom Button"
+                                AutomationProperties.HelpText="Reset zoom to default"/>
+                    </StackPanel>
+
+                    <Border Grid.Row="1" Background="{DynamicResource ControlBackground}"
+                            BorderBrush="{DynamicResource BorderDefault}"
+                            BorderThickness="1"
+                            CornerRadius="4">
+                        <Grid>
+                            <ui:TreemapControl x:Name="TreemapControl"
+                                             Margin="8"
+                                             Visibility="{Binding VisualizationViewModel.IsSunburstMode, Converter={StaticResource BoolToVisibilityConverter}, ConverterParameter=Inverse}"
+                                             Nodes="{Binding VisualizationViewModel.VisibleNodes}"/>
+                            <ui:SunburstControl x:Name="SunburstControl"
+                                              Margin="8"
+                                              Visibility="{Binding VisualizationViewModel.IsSunburstMode, Converter={StaticResource BoolToVisibilityConverter}}"
+                                              DataContext="{Binding RootFolder}"/>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </Grid>
 		</Grid>
 
   		<StatusBar Grid.Row="4" Background="{DynamicResource ControlBackground}" Foreground="{DynamicResource TextPrimary}" Padding="{StaticResource ThicknessXS}"
