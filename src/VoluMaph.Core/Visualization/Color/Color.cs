@@ -20,6 +20,11 @@ public struct Color : IEquatable<Color>
         return new Color(r, g, b);
     }
 
+    public static Color FromArgb(byte a, byte r, byte g, byte b)
+    {
+        return new Color(r, g, b, a);
+    }
+
     public bool Equals(Color other)
     {
         return R == other.R && G == other.G && B == other.B && A == other.A;
