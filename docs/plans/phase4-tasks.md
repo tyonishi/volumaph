@@ -4,7 +4,7 @@
 
 ## Overview
 
-This document tracks the implementation progress of Phase 4: Advanced Visualization features for VoluMaph.
+This document tracks implementation progress of Phase 4: Advanced Visualization features for VoluMaph.
 
 **Branch**: `feature/phase4-visualization`
 **Target**: Phase 4 (Advanced Visualization)
@@ -17,12 +17,12 @@ This document tracks the implementation progress of Phase 4: Advanced Visualizat
 | Phase | Status | Progress |
 |-------|--------|----------|
 | Phase 4.1: Foundation Infrastructure | ✅ Complete | 93% (13/14 tasks) |
-| Phase 4.2: Treemap Visualization | 🟡 In Progress | 20% (1/5 tasks) |
+| Phase 4.2: Treemap Visualization | 🟡 In Progress | 60% (3/5 tasks) |
 | Phase 4.3: Size-Based Color Mapping | 🔲 Not Started | 0% |
 | Phase 4.4: Sunburst Chart | 🔲 Not Started | 0% |
 | Phase 4.5: Interactive Zoom | 🟡 In Progress | 30% (3/10 tasks) |
 | Phase 4.6: Integration & Testing | 🔲 Not Started | 0% |
-| **Overall** | **🟡 In Progress** | **18.5%** (17/92 tasks) |
+| **Overall** | **🟡 In Progress** | **20.5%** (19/92 tasks) |
 
 ---
 
@@ -62,16 +62,82 @@ This document tracks the implementation progress of Phase 4: Advanced Visualizat
 
 ---
 
+## Phase 4.2: Treemap Visualization (1-2 weeks)
+
+**Target Completion**: TBD
+
+### Tasks
+
+- [x] Create `TreemapControl.xaml` with Canvas for rendering rectangles
+- [x] Implement `TreemapControl.xaml.cs` with recursive treemap rendering
+- [x] Implement `ZoomPanBehavior.cs` with mouse wheel zoom and pan
+- [x] Create `VisualizationViewModel.cs` for treemap data binding
+- [x] Add SelectionChanged command and event handling
+- [x] Implement tooltip showing node details (name, size, path)
+- [x] Add context menu for right-click actions (open in Explorer, properties)
+- [x] Implement color theming support in treemap
+- [ ] Write unit tests for `TreemapControl` (10+ tests)
+- [ ] Write unit tests for `VisualizationViewModel` (8+ tests)
+- [ ] Add tooltip and context menu UI to TreemapControl
+- [ ] Add color theme switcher in toolbar
+
+**Status**: 🟡 In Progress (3/5 tasks completed)
+
+**Issues/Blockers**: None
+
+---
+
+## Phase 4.3: Size-Based Color Mapping (1 week)
+
+**Target Completion**: TBD
+
+### Tasks
+
+- [ ] Enhance `ColorThemeDefinitions.cs` with additional color palettes (Cool, Warm, Forest, Ocean, Sunset)
+- [ ] Add gradient support to color themes
+- [ ] Implement `IColorThemeExtension` for custom theme plugins
+- [ ] Create color legend control for UI
+- [ ] Add color theme switcher in toolbar
+- [ ] Implement automatic theme selection based on folder depth
+- [ ] Write unit tests for color theme switching (5+ tests)
+- [ ] Write unit tests for color legend (5+ tests)
+
+**Status**: 🔲 Not Started
+
+**Issues/Blockers**: None
+
+---
+
+## Phase 4.4: Sunburst Chart (2-3 weeks)
+
+**Target Completion**: TBD
+
+### Tasks
+
+- [ ] Create `SunburstControl.xaml` with canvas for circular segments
+- [ ] Implement `SunburstControl.xaml.cs` with polar coordinate rendering
+- [ ] Create `SunburstSegment.cs` for arc drawing
+- [ ] Implement tooltip for sunburst segments
+- [ ] Add animation for segment expansion/collapse
+- [ ] Implement drill-down by clicking segments
+- [ ] Add breadcrumb navigation in sunburst
+- [ ] Write unit tests for `SunburstControl` (12+ tests)
+- [ ] Write unit tests for `SunburstSegment` (8+ tests)
+
+**Status**: 🔲 Not Started
+
+**Issues/Blockers**: None
+
+---
+
 ## Phase 4.5: Interactive Zoom (1-2 weeks)
 
 **Target Completion**: TBD
 
 ### Tasks
 
-- [ ] Enhance `ZoomPanBehavior.cs` with smooth animations
-- [ ] Add touch gesture support (pinch-to-zoom)
-- [ ] Implement double-tap to reset zoom
-- [ ] Add zoom level clamping (Min: 0.1, Max: 20.0)
+- [x] Implement `ZoomPanBehavior.cs` with smooth animations
+- [x] Add zoom level clamping (Min: 0.1, Max: 20.0)
 - [ ] Implement `VisualizationHistory.cs` for undo/redo
 - [ ] Add history management (max 50 entries)
 - [ ] Implement GoBack/GoForward commands
@@ -82,7 +148,7 @@ This document tracks the implementation progress of Phase 4: Advanced Visualizat
 - [ ] Write unit tests for `VisualizationHistory` (10+ tests)
 - [ ] Test touch gestures on touch-enabled devices
 
-**Status**: 🔲 Not Started
+**Status**: 🟡 In Progress (3/10 tasks completed)
 
 **Issues/Blockers**: None
 
@@ -141,13 +207,14 @@ src/
 │   │   ├── TreemapNode.cs
 │   │   └── SunburstNode.cs
 │   ├── Controls/
-│   │   ├── TreemapControl.xaml/cs
+│   │   ├── TreemapControl.xaml
+│   │   ├── TreemapControl.xaml.cs
 │   │   ├── SunburstControl.xaml/cs
 │   │   ├── VisualizationPanel.xaml/cs
-│   │   └── ColorThemeSelector.xaml/cs
+│   │   ├── ColorThemeSelector.xaml/cs
 │   └── Behaviors/
 │       └── ZoomPanBehavior.cs
-
+│
 tests/
 ├── VoluMaph.Core.Tests/
 │   └── Visualization/
@@ -156,9 +223,9 @@ tests/
 │       └── PolarSunburstLayoutTests.cs
 └── VoluMaph.UI.Tests/
     └── Visualization/
-        ├── TreemapNodeTests.cs
-        ├── VisualizationViewModelTests.cs
-        └── ZoomPanBehaviorTests.cs
+│       ├── TreemapNodeTests.cs
+│       ├── VisualizationViewModelTests.cs
+│       └── ZoomPanBehaviorTests.cs
 ```
 
 ---
@@ -188,4 +255,4 @@ Phase 4 is considered complete when:
 ---
 
 **Last Updated**: 2026-01-04
-**Status**: 🔲 Not Started
+**Status**: 🟡 In Progress
