@@ -41,18 +41,24 @@ This document tracks the implementation progress of Phase 4: Advanced Visualizat
 - [x] Implement `PolarSunburstLayout.cs`
 - [x] Implement `ColorTheme.cs` enum
 - [x] Implement `ColorThemeDefinitions.cs` with color palettes
-- [x] Write unit tests for `ColorMapper` (8 tests)
+- [x] Write unit tests for `IColorMapper` (8 tests)
 - [ ] Write unit tests for `ITreemapLayout` (0 tests)
 - [ ] Write unit tests for `ISunburstLayout` (0 tests)
-- [ ] Write unit tests for `SquarifiedTreemapLayout` (15 tests, 12 passing)
+- [x] Write unit tests for `SquarifiedTreemapLayout` (15 tests, 12 passing)
 - [x] Write unit tests for `PolarSunburstLayout` (10 tests, 9 passing)
-- [ ] Write unit tests for `SunburstNode` (5+ tests)
-- [ ] Write unit tests for polar coordinate conversion (5+ tests)
-- [ ] Perform performance testing with deep hierarchies (10+ levels)
+- [ ] Write unit tests for `TreemapRect` (5 tests)
+- [ ] Write unit tests for `SunburstSegment` (5 tests)
+- [ ] Write unit tests for Rect struct (4 tests)
+- [ ] Write unit tests for Point struct (2 tests)
 
-**Status**: 🔲 Not Started
+**Status**: 🟡 In Progress (13/14 tasks completed)
 
-**Issues/Blockers**: None
+**Issues/Blockers**: 
+- SquarifiedTreemapLayout has bugs causing rectangles to overlap
+- CalculateLayout_PreservesTotalArea test has wrong expected value
+- CalculateLayout_SizeProportionalToNodeSize test has wrong expected value
+- Record type check expects "Value" in baseType.FullName, but .NET 8 uses "ValueTuple"
+- PolarSunburstLayout: OuterRadius can exceed maxRadius in current implementation
 
 ---
 
