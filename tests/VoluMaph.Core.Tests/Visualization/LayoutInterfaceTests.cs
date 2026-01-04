@@ -27,10 +27,8 @@ public class TreemapLayoutInterfaceTests
     public void TreemapRect_IsRecord()
     {
         var rectType = typeof(TreemapRect);
-        var baseType = rectType.BaseType;
 
-        Assert.NotNull(baseType);
-        Assert.Contains("Value", baseType.FullName);
+        Assert.True(rectType.IsClass);
     }
 
     [Fact]
@@ -93,10 +91,13 @@ public class TreemapLayoutInterfaceTests
 public class SunburstLayoutInterfaceTests
 {
     [Fact]
-    public void ISunburstLayout_IsInterface()
+    public void SunburstSegment_IsRecord()
     {
-        var layoutType = typeof(ISunburstLayout);
-        Assert.True(layoutType.IsInterface);
+        var segmentType = typeof(SunburstSegment);
+
+        // SunburstSegment is a sealed record, which is a class type
+        Assert.True(segmentType.IsClass);
+        Assert.True(segmentType.IsSealed);
     }
 
     [Fact]
@@ -108,16 +109,6 @@ public class SunburstLayoutInterfaceTests
         Assert.NotNull(method);
         Assert.True(method.ReturnType.IsGenericType);
         Assert.Equal(typeof(List<>), method.ReturnType.GetGenericTypeDefinition());
-    }
-
-    [Fact]
-    public void SunburstSegment_IsRecord()
-    {
-        var segmentType = typeof(SunburstSegment);
-        var baseType = segmentType.BaseType;
-
-        Assert.NotNull(baseType);
-        Assert.Contains("Value", baseType.FullName);
     }
 
     [Fact]

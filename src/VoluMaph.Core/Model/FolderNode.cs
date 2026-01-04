@@ -31,8 +31,8 @@ public sealed class FolderNode : FileSystemNode
             name: System.IO.Path.GetFileName(fullPath),
             fullPath: fullPath,
             size: 0,
-            createdAt: null,
-            modifiedAt: null)
+            createdAt: DateTime.MinValue,
+            modifiedAt: DateTime.MinValue)
     {
     }
 

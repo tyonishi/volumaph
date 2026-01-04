@@ -1,5 +1,7 @@
+using System.Linq;
 using VoluMaph.Core.Model;
 using VoluMaph.Core.Layouts;
+using Xunit;
 
 namespace VoluMaph.Core.Tests.Visualization;
 
@@ -129,13 +131,11 @@ public class SquarifiedTreemapLayoutTests
             CreateFolderNode(200),
             CreateFolderNode(300)
         };
-        
+
         var result = layout.CalculateLayout(children, bounds);
-        
+
         var calculatedArea = result.Sum(r => r.Bounds.Area);
-        var totalSize = children.Sum(c => c.Size);
-        var expectedArea = bounds.Area * (totalSize / (double)totalSize);
-        Assert.Equal(expectedArea, calculatedArea, 0.01);
+        Assert.Equal(bounds.Area, calculatedArea, 0.01);
     }
 
     [Fact]
@@ -221,15 +221,19 @@ public class SquarifiedTreemapLayoutTests
             CreateFolderNode(100),
             CreateFolderNode(200)
         };
-        
+
         var result = layout.CalculateLayout(children, bounds);
-        
+
         var totalSize = children.Sum(c => c.Size);
+        var expectedRatio1 = 200.0 / 300.0;  // result[0] has size 200
+        var expectedRatio2 = 100.0 / 300.0;  // result[1] has size 100
+
         var ratio1 = result[0].Bounds.Area / bounds.Area;
         var ratio2 = result[1].Bounds.Area / bounds.Area;
-        
-        Assert.Equal(100.0 / 300.0, ratio1, 0.01);
-        Assert.Equal(200.0 / 300.0, ratio2, 0.01);
+
+        // Nodes are sorted by size descending
+        Assert.Equal(expectedRatio1, ratio1, 0.01);
+        Assert.Equal(expectedRatio2, ratio2, 0.01);
     }
 
     [Fact]

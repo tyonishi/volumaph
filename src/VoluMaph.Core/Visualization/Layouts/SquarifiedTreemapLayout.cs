@@ -66,15 +66,19 @@ public sealed class SquarifiedTreemapLayout : ITreemapLayout
 
         if (bounds.Width > bounds.Height)
         {
-            var rowWidth = bounds.Width * (rowSize / (double)totalSize);
+            // Calculate row width based on area proportion
+            var rowArea = bounds.Area * (rowSize / (double)totalSize);
+            var rowWidth = rowArea / bounds.Height;
             var nextBounds = new Rect(bounds.X + rowWidth, bounds.Y, bounds.Width - rowWidth, bounds.Height);
-            Squarify(nodes, bestRowEnd, end, nextBounds, totalSize, results);
+            Squarify(nodes, bestRowEnd, end, nextBounds, remainingSize, results);
         }
         else
         {
-            var rowHeight = bounds.Height * (rowSize / (double)totalSize);
+            // Calculate row height based on area proportion
+            var rowArea = bounds.Area * (rowSize / (double)totalSize);
+            var rowHeight = rowArea / bounds.Width;
             var nextBounds = new Rect(bounds.X, bounds.Y + rowHeight, bounds.Width, bounds.Height - rowHeight);
-            Squarify(nodes, bestRowEnd, end, nextBounds, totalSize, results);
+            Squarify(nodes, bestRowEnd, end, nextBounds, remainingSize, results);
         }
     }
 
@@ -97,18 +101,17 @@ public sealed class SquarifiedTreemapLayout : ITreemapLayout
         for (int i = start; i < end; i++)
         {
             var node = nodes[i];
-            var nodeArea = rowArea * (node.Size / (double)rowSize);
-
             Rect nodeBounds;
+
             if (horizontal)
             {
-                var nodeWidth = bounds.Width * (node.Size / (double)rowSize);
+                var nodeWidth = rowArea * (node.Size / (double)rowSize) / bounds.Height;
                 nodeBounds = new Rect(x, y, nodeWidth, bounds.Height);
                 x += nodeWidth;
             }
             else
             {
-                var nodeHeight = bounds.Height * (node.Size / (double)rowSize);
+                var nodeHeight = rowArea * (node.Size / (double)rowSize) / bounds.Width;
                 nodeBounds = new Rect(x, y, bounds.Width, nodeHeight);
                 y += nodeHeight;
             }

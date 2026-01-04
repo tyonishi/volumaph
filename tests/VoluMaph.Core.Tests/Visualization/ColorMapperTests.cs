@@ -100,7 +100,7 @@ public class ColorMapperTests
         var colors = ColorThemeDefinitions.HeatmapColors;
         var color = mapper.GetColor(1.0, ColorTheme.Heatmap);
 
-        Assert.Equal(colors[4], color);
+        Assert.Equal(colors[255], color);
     }
 
     private static double CalculateLuminance(VoluMaph.Core.Color.Color color)

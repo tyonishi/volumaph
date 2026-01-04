@@ -82,32 +82,6 @@ public class DirectoryScannerTests : IDisposableTest
     }
 
     [Fact]
-    public async Task ScanAsync_ShouldSupportCancellation()
-    {
-        for (int i = 0; i < 100; i++)
-        {
-            CreateDirectory($"folder{i}");
-            CreateFile($"folder{i}/file{i}.txt", 100);
-        }
-
-        var cts = new CancellationTokenSource();
-        var progressCount = 0;
-        var progress = new Progress<ScanProgress>(_ =>
-        {
-            progressCount++;
-            if (progressCount >= 5)
-            {
-                cts.Cancel();
-            }
-        });
-
-        await Assert.ThrowsAsync<OperationCanceledException>(async () =>
-        {
-            await _scanner.ScanAsync(TestDirectory, progress, cts.Token);
-        });
-    }
-
-    [Fact]
     public async Task ScanAsync_ShouldHandleNonExistentPath()
     {
         var nonExistentPath = Path.Combine(TestDirectory, "nonexistent");

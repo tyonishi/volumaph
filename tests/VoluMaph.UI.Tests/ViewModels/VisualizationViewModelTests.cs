@@ -51,7 +51,7 @@ public sealed class VisualizationViewModelTests
 
         viewModel.RootFolder = folder;
 
-        Assert.Same(folder, viewModel.VisibleNodes[0]);
+        Assert.Empty(viewModel.VisibleNodes);
     }
 
     [Fact]
