@@ -20,6 +20,11 @@ public sealed class SizeBasedColorMapper : IColorMapper
             ColorTheme.ColorblindSafe => GetColorblindSafeColor(percentage),
             ColorTheme.Viridis => GetViridisColor(percentage),
             ColorTheme.Plasma => GetPlasmaColor(percentage),
+            ColorTheme.Cool => GetCoolColor(percentage),
+            ColorTheme.Warm => GetWarmColor(percentage),
+            ColorTheme.Forest => GetForestColor(percentage),
+            ColorTheme.Ocean => GetOceanColor(percentage),
+            ColorTheme.Sunset => GetSunsetColor(percentage),
             _ => GetHeatmapColor(percentage)
         };
     }
@@ -67,6 +72,31 @@ public sealed class SizeBasedColorMapper : IColorMapper
     private Color GetPlasmaColor(double percentage)
     {
         return InterpolateFromPalette(percentage, ColorThemeDefinitions.PlasmaColors);
+    }
+
+    private Color GetCoolColor(double percentage)
+    {
+        return InterpolateFromPalette(percentage, ColorThemeDefinitions.CoolColors);
+    }
+
+    private Color GetWarmColor(double percentage)
+    {
+        return InterpolateFromPalette(percentage, ColorThemeDefinitions.WarmColors);
+    }
+
+    private Color GetForestColor(double percentage)
+    {
+        return InterpolateFromPalette(percentage, ColorThemeDefinitions.ForestColors);
+    }
+
+    private Color GetOceanColor(double percentage)
+    {
+        return InterpolateFromPalette(percentage, ColorThemeDefinitions.OceanColors);
+    }
+
+    private Color GetSunsetColor(double percentage)
+    {
+        return InterpolateFromPalette(percentage, ColorThemeDefinitions.SunsetColors);
     }
 
     private Color InterpolateFromPalette(double percentage, Color[] colors)

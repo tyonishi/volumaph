@@ -11,6 +11,7 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using VoluMaph.Core.Analysis;
+using VoluMaph.Core.Color;
 using VoluMaph.Core.Model;
 using VoluMaph.Core.Scanning;
 using VoluMaph.Infrastructure.Logging;
@@ -49,6 +50,7 @@ public sealed class MainViewModel : ViewModelBase
     private string _selectedExtension = string.Empty;
     private string _sortColumn = "Size";
     private ListSortDirection _sortDirection = ListSortDirection.Descending;
+    private ColorTheme _colorTheme = ColorTheme.Heatmap;
 
     public sealed class ColumnDefinition
     {
@@ -62,6 +64,7 @@ public sealed class MainViewModel : ViewModelBase
     private ICollectionView? _childrenView;
 
     public ObservableCollection<string> AvailableDrives { get; } = new();
+    public ObservableCollection<ColorTheme> AvailableColorThemes { get; } = new();
     public ObservableCollection<FileSystemNode> CurrentChildren => _currentChildren;
     public ICollectionView ChildrenView
     {
@@ -165,6 +168,19 @@ public sealed class MainViewModel : ViewModelBase
     }
 
     public string ToggleThemeText => IsDarkTheme ? "☀ ライトモードに切り替え" : "🌙 ダークモードに切り替え";
+
+    public ColorTheme ColorTheme
+    {
+        get => _colorTheme;
+        set
+        {
+            if (_colorTheme != value)
+            {
+                _colorTheme = value;
+                RaisePropertyChanged();
+            }
+        }
+    }
 
     public int? ModifiedAfterDays
     {
@@ -394,6 +410,7 @@ public sealed class MainViewModel : ViewModelBase
         _currentChildren = new ObservableCollection<FileSystemNode>();
 
         InitializeColumnDefinitions();
+        InitializeColorThemes();
         LoadDrives();
         LoadSettings();
 
@@ -421,6 +438,15 @@ public sealed class MainViewModel : ViewModelBase
         ColumnDefinitions.Add(new ColumnDefinition { Header = "Name", Binding = "Name", IsVisible = true, Width = double.NaN });
         ColumnDefinitions.Add(new ColumnDefinition { Header = "Size", Binding = "Size", IsVisible = true, Width = 120 });
         ColumnDefinitions.Add(new ColumnDefinition { Header = "Path", Binding = "FullPath", IsVisible = true, Width = double.NaN });
+    }
+
+    private void InitializeColorThemes()
+    {
+        AvailableColorThemes.Clear();
+        foreach (ColorTheme theme in Enum.GetValues(typeof(ColorTheme)))
+        {
+            AvailableColorThemes.Add(theme);
+        }
     }
 
     private void LoadDrives()

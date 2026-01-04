@@ -21,14 +21,16 @@
             <Setter Property="Foreground" Value="{Binding Size, Converter={StaticResource ColorConverter}}"/>
         </Style>
     </Window.Resources>
-    <Window.InputBindings>
-		<KeyBinding Key="E" Modifiers="Control" Command="{Binding ExportToCsvCommand}"/>
-		<KeyBinding Key="F" Modifiers="Control"/>
-		<KeyBinding Key="Escape" Command="{Binding CancelCommand}"/>
-		<KeyBinding Key="F5" Command="{Binding RefreshCommand}"/>
-		<KeyBinding Key="F5" Modifiers="Control" Command="{Binding ScanCommand}"/>
-		<KeyBinding Key="T" Modifiers="Control" Command="{Binding ToggleThemeCommand}"/>
-	</Window.InputBindings>
+     <Window.InputBindings>
+ 		<KeyBinding Key="E" Modifiers="Control" Command="{Binding ExportToCsvCommand}"/>
+ 		<KeyBinding Key="F" Modifiers="Control"/>
+ 		<KeyBinding Key="Escape" Command="{Binding CancelCommand}"/>
+ 		<KeyBinding Key="F5" Command="{Binding RefreshCommand}"/>
+ 		<KeyBinding Key="F5" Modifiers="Control" Command="{Binding ScanCommand}"/>
+ 		<KeyBinding Key="T" Modifiers="Control" Command="{Binding ToggleThemeCommand}"/>
+ 		<KeyBinding Key="Home" Command="{Binding ResetZoomCommand}"/>
+ 		<KeyBinding Key="End" Command="{Binding MaxZoomCommand}"/>
+ 	</Window.InputBindings>
     <Grid AllowDrop="True" Drop="Grid_Drop" DragOver="Grid_DragOver"
          Background="{DynamicResource WindowBackground}"
          KeyDown="Window_KeyDown">
@@ -96,14 +98,18 @@
             <Separator/>
 
             <Button Command="{Binding ToggleThemeCommand}" Style="{StaticResource SecondaryButtonStyle}" Margin="4"
-                    AutomationProperties.Name="Theme Toggle Button"
-                    AutomationProperties.HelpText="Switch between light and dark theme"
-                    ToolTip="Switch between light and dark theme">
+                     AutomationProperties.Name="Theme Toggle Button"
+                     AutomationProperties.HelpText="Switch between light and dark theme"
+                     ToolTip="Switch between light and dark theme">
                 <StackPanel Orientation="Horizontal">
                     <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="20" Margin="0,0,8,0" Text="{x:Static helpers:FluentIcons.Light}"/>
                     <TextBlock Text="Theme"/>
                 </StackPanel>
             </Button>
+            <ComboBox Width="140" ItemsSource="{Binding AvailableColorThemes}" SelectedItem="{Binding ColorTheme}" Background="{DynamicResource ControlBackground}" Foreground="{DynamicResource TextPrimary}" BorderBrush="{DynamicResource BorderDefault}" BorderThickness="1" Padding="8" Style="{StaticResource FluentComboBoxStyle}"
+                      AutomationProperties.Name="Color Theme Selection"
+                      AutomationProperties.HelpText="Select color theme for visualization"
+                      ToolTip="Select color theme for visualization"/>
 
             <Separator/>
 

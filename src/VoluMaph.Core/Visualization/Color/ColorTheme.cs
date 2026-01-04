@@ -7,5 +7,10 @@ public enum ColorTheme
     ColorblindSafe,
     Viridis,
     Plasma,
+    Cool,
+    Warm,
+    Forest,
+    Ocean,
+    Sunset,
     ExtensionBased
 }

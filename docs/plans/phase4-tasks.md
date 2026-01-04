@@ -17,12 +17,12 @@ This document tracks implementation progress of Phase 4: Advanced Visualization 
 | Phase | Status | Progress |
 |-------|--------|----------|
 | Phase 4.1: Foundation Infrastructure | ✅ Complete | 93% (13/14 tasks) |
-| Phase 4.2: Treemap Visualization | 🟡 In Progress | 60% (3/5 tasks) |
-| Phase 4.3: Size-Based Color Mapping | 🔲 Not Started | 0% |
+| Phase 4.2: Treemap Visualization | ✅ Complete | 100% (5/5 tasks) |
+| Phase 4.3: Size-Based Color Mapping | ✅ Complete | 100% (8/8 tasks) |
 | Phase 4.4: Sunburst Chart | 🔲 Not Started | 0% |
-| Phase 4.5: Interactive Zoom | 🟡 In Progress | 30% (3/10 tasks) |
+| Phase 4.5: Interactive Zoom | 🟡 In Progress | 70% (7/10 tasks) |
 | Phase 4.6: Integration & Testing | 🔲 Not Started | 0% |
-| **Overall** | **🟡 In Progress** | **20.5%** (19/92 tasks) |
+| **Overall** | **🟡 In Progress** | **34.8%** (33/92 tasks) |
 
 ---
 
@@ -64,7 +64,7 @@ This document tracks implementation progress of Phase 4: Advanced Visualization 
 
 ## Phase 4.2: Treemap Visualization (1-2 weeks)
 
-**Target Completion**: TBD
+**Target Completion**: ✅ Complete
 
 ### Tasks
 
@@ -76,35 +76,50 @@ This document tracks implementation progress of Phase 4: Advanced Visualization 
 - [x] Implement tooltip showing node details (name, size, path)
 - [x] Add context menu for right-click actions (open in Explorer, properties)
 - [x] Implement color theming support in treemap
-- [ ] Write unit tests for `TreemapControl` (10+ tests)
-- [ ] Write unit tests for `VisualizationViewModel` (8+ tests)
-- [ ] Add tooltip and context menu UI to TreemapControl
-- [ ] Add color theme switcher in toolbar
+- [x] Write unit tests for `TreemapControl` (16 tests)
+- [x] Write unit tests for `VisualizationViewModel` (24 tests)
+- [x] Add tooltip and context menu UI to TreemapControl
+- [x] Add color theme switcher in toolbar
 
-**Status**: 🟡 In Progress (3/5 tasks completed)
+**Status**: ✅ Complete (12/12 tasks completed)
 
 **Issues/Blockers**: None
+
+**Summary**:
+- TreemapControl unit tests: 16 tests covering properties, events, and collection operations
+- VisualizationViewModel unit tests: 24 tests covering properties, commands, and event handling
+- Color theme switcher added to toolbar UI
+- All tests follow TDD principles and project coding guidelines
 
 ---
 
 ## Phase 4.3: Size-Based Color Mapping (1 week)
 
-**Target Completion**: TBD
+**Target Completion**: ✅ Complete
 
 ### Tasks
 
-- [ ] Enhance `ColorThemeDefinitions.cs` with additional color palettes (Cool, Warm, Forest, Ocean, Sunset)
-- [ ] Add gradient support to color themes
-- [ ] Implement `IColorThemeExtension` for custom theme plugins
-- [ ] Create color legend control for UI
-- [ ] Add color theme switcher in toolbar
-- [ ] Implement automatic theme selection based on folder depth
-- [ ] Write unit tests for color theme switching (5+ tests)
-- [ ] Write unit tests for color legend (5+ tests)
+- [x] Enhance `ColorThemeDefinitions.cs` with additional color palettes (Cool, Warm, Forest, Ocean, Sunset)
+- [x] Add gradient support to color themes
+- [x] Implement `IColorThemeExtension` for custom theme plugins
+- [x] Create color legend control for UI
+- [x] Add color theme switcher in toolbar (already done in Phase 4.2)
+- [x] Implement automatic theme selection based on folder depth
+- [x] Write unit tests for color theme switching (5+ tests)
+- [x] Write unit tests for color legend (5+ tests)
 
-**Status**: 🔲 Not Started
+**Status**: ✅ Complete (8/8 tasks completed)
 
 **Issues/Blockers**: None
+
+**Summary**:
+- Added 5 new color palettes: Cool, Warm, Forest, Ocean, Sunset with gradient support
+- Implemented IColorThemeExtension interface for custom theme plugins
+- Created ColorLegendControl.xaml and ColorLegendControl.xaml.cs
+- Enhanced VisualizationViewModel with automatic theme selection based on folder depth
+- ColorThemeSwitchingTests.cs: 12 tests covering new themes and gradient interpolation
+- ColorLegendControlTests.cs: 12 tests covering control behavior, property changes, and UI updates
+- All tests follow TDD principles and project coding guidelines
 
 ---
 
@@ -138,17 +153,17 @@ This document tracks implementation progress of Phase 4: Advanced Visualization 
 
 - [x] Implement `ZoomPanBehavior.cs` with smooth animations
 - [x] Add zoom level clamping (Min: 0.1, Max: 20.0)
-- [ ] Implement `VisualizationHistory.cs` for undo/redo
-- [ ] Add history management (max 50 entries)
-- [ ] Implement GoBack/GoForward commands
-- [ ] Add keyboard shortcuts (Home/End/Esc for zoom)
+- [x] Implement `VisualizationHistory.cs` for undo/redo
+- [x] Add history management (max 50 entries)
+- [x] Implement GoBack/GoForward commands
+- [x] Add keyboard shortcuts (Home/End/Esc for zoom)
 - [ ] Implement bookmark functionality for zoom states
 - [ ] Add zoom centering on selected node
 - [ ] Write unit tests for `ZoomPanBehavior` (15+ tests)
-- [ ] Write unit tests for `VisualizationHistory` (10+ tests)
+- [x] Write unit tests for `VisualizationHistory` (10+ tests)
 - [ ] Test touch gestures on touch-enabled devices
 
-**Status**: 🟡 In Progress (3/10 tasks completed)
+**Status**: 🟡 In Progress (7/10 tasks completed)
 
 **Issues/Blockers**: None
 
