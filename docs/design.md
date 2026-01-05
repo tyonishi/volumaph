@@ -40,7 +40,11 @@
 - Display size and percentage per folder
 - DataGrid display (sortable, with header sort indicators)
 - Summary cards (statistics: total size, file count, folder count, largest file)
-- Treemap (rectangular partition) display (future implementation)
+- ✅ Treemap view (`src/VoluMaph.UI/Controls/TreemapControl.xaml(.cs)`; layout: `SquarifiedTreemapLayout.cs`)
+- ✅ Size-based color coding with gradient palettes and theme support (`src/VoluMaph.Core/Visualization/Color/SizeBasedColorMapper.cs`; `ColorThemeDefinitions.cs`)
+- ✅ Sunburst chart with drill-down and breadcrumb navigation (`src/VoluMaph.UI/Controls/SunburstControl.xaml(.cs)`; `PolarSunburstLayout.cs`)
+- ✅ Interactive zoom & pan with history and bookmarks (`src/VoluMaph.UI/Behaviors/ZoomPanBehavior.cs`; `VisualizationHistory.cs`; `VisualizationBookmark.cs`)
+- ✅ Visualization tests added (`tests/VoluMaph.Core.Tests/Visualization/*`, `tests/VoluMaph.UI.Tests/Visualization/*`)
 
 #### Search & Filtering ✅ Implemented
 - Folder/file name search (real-time, case-insensitive)
@@ -249,11 +253,11 @@ graph TB
 
 ## 8. Future Enhancements
 
-### 8.1 Visualization Extensions 🔲 Not Implemented
-- Treemap (rectangular partition) display
-- Sunburst chart
-- Size-based color coding
-- Interactive zoom
+### 8.1 Visualization Extensions ✅ Implemented
+- ✅ Treemap view (`src/VoluMaph.UI/Controls/TreemapControl.xaml(.cs)`; layout: `SquarifiedTreemapLayout.cs`)
+- ✅ Sunburst chart with drill-down and breadcrumb navigation (`src/VoluMaph.UI/Controls/SunburstControl.xaml(.cs)`; `PolarSunburstLayout.cs`)
+- ✅ Size-based color coding with gradient palettes and theme support (`src/VoluMaph.Core/Visualization/Color/SizeBasedColorMapper.cs`; `ColorThemeDefinitions.cs`)
+- ✅ Interactive zoom & pan with history and bookmarks (`src/VoluMaph.UI/Behaviors/ZoomPanBehavior.cs`; `VisualizationHistory.cs`; `VisualizationBookmark.cs`)
 
 ### 8.2 Advanced Features 🔲 Not Implemented
 - MFT high-speed scan (NTFS MFT reading)
@@ -306,7 +310,12 @@ graph TB
 - Drag & drop
 - Screenshot
 
-### Phase 4: Advanced Visualization 🔲 Not Implemented
+### Phase 4: Advanced Visualization ✅ Implemented
+- ✅ Treemap view (`src/VoluMaph.UI/Controls/TreemapControl.xaml(.cs)`; layout: `SquarifiedTreemapLayout.cs`)
+- ✅ Size-based color coding with gradient palettes and theme support (`src/VoluMaph.Core/Visualization/Color/SizeBasedColorMapper.cs`; `ColorThemeDefinitions.cs`)
+- ✅ Sunburst chart with drill-down and breadcrumb navigation (`src/VoluMaph.UI/Controls/SunburstControl.xaml(.cs)`; `PolarSunburstLayout.cs`)
+- ✅ Interactive zoom & pan (`src/VoluMaph.UI/Behaviors/ZoomPanBehavior.cs`; `VisualizationHistory.cs`)
+- ✅ Tests added (`tests/VoluMaph.Core.Tests/Visualization/*`, `tests/VoluMaph.UI.Tests/Visualization/*`)
 - Treemap
 - Size-based color coding
 - Sunburst chart
