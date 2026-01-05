@@ -56,6 +56,8 @@ public sealed class MainViewModel : ViewModelBase
     private ListSortDirection _sortDirection = ListSortDirection.Descending;
     private ColorTheme _colorTheme = ColorTheme.Heatmap;
     private bool _showVisualization = false;
+    // Suppress re-entrant UpdateCurrentChildren calls when we programmatically update filter collections
+    private bool _suppressUpdateCurrentChildren = false;
 
     public sealed class ColumnDefinition
     {
@@ -336,7 +338,10 @@ public sealed class MainViewModel : ViewModelBase
             _selectedExtension = value;
             RaisePropertyChanged();
             RaisePropertyChanged(nameof(HasActiveFilters));
-            UpdateCurrentChildren();
+            if (!_suppressUpdateCurrentChildren)
+            {
+                UpdateCurrentChildren();
+            }
         }
     }
 
@@ -451,7 +456,17 @@ public sealed class MainViewModel : ViewModelBase
 
     private static string NormalizePath(string path)
     {
-        return path.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        try
+        {
+            // Resolve to full absolute path and trim any trailing separators for a consistent key
+            var full = Path.GetFullPath(path);
+            return full.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        }
+        catch
+        {
+            // Fall back to best-effort trimming if GetFullPath fails for any reason
+            return path.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        }
     }
 
     private static string GetDefaultExportPath(string extension)
@@ -586,33 +601,88 @@ public sealed class MainViewModel : ViewModelBase
 
     private void UpdateCurrentChildren()
     {
-        _currentChildren.Clear();
-        AvailableExtensions.Clear();
-        AvailableExtensions.Add("All");
-
-        if (SelectedNode is FolderNode folder)
+        // Prevent re-entrant calls (e.g. AvailableExtensions update -> ComboBox SelectedItem changed -> SelectedExtension setter)
+        if (_suppressUpdateCurrentChildren)
         {
-            var criteria = new FilterCriteria
-            {
-                ModifiedAfterDays = ModifiedAfterDays,
-                ModifiedBeforeDays = ModifiedBeforeDays,
-                CreatedAfterDays = CreatedAfterDays,
-                CreatedBeforeDays = CreatedBeforeDays,
-                IncludeFiles = true,
-                IncludeFolders = true
-            };
+            return;
+        }
 
-            var filtered = _analyzer.Filter(folder, criteria);
-            var extensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            var tempChildren = new List<FileSystemNode>();
-            var uniquePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        _suppressUpdateCurrentChildren = true;
+        try
+        {
+            _currentChildren.Clear();
+            AvailableExtensions.Clear();
+            AvailableExtensions.Add("All");
 
-            var minSize = long.TryParse(MinSizeFilter, out var min) ? min : 0;
-            var maxSize = long.TryParse(MaxSizeFilter, out var max) ? max : long.MaxValue;
-            var selectedExtension = SelectedExtension;
-            if (string.IsNullOrEmpty(selectedExtension))
+            if (SelectedNode is FolderNode folder)
             {
-                selectedExtension = "All";
+                var criteria = new FilterCriteria
+                {
+                    ModifiedAfterDays = ModifiedAfterDays,
+                    ModifiedBeforeDays = ModifiedBeforeDays,
+                    CreatedAfterDays = CreatedAfterDays,
+                    CreatedBeforeDays = CreatedBeforeDays,
+                    IncludeFiles = true,
+                    IncludeFolders = true
+                };
+
+                var filtered = _analyzer.Filter(folder, criteria);
+                var extensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                var tempChildren = new List<FileSystemNode>();
+                var uniquePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+                var minSize = long.TryParse(MinSizeFilter, out var min) ? min : 0;
+                var maxSize = long.TryParse(MaxSizeFilter, out var max) ? max : long.MaxValue;
+                var selectedExtension = SelectedExtension;
+                if (string.IsNullOrEmpty(selectedExtension))
+                {
+                    selectedExtension = "All";
+                    if (_selectedExtension != "All")
+                    {
+                        _selectedExtension = "All";
+                        RaisePropertyChanged(nameof(SelectedExtension));
+                    }
+                }
+
+                foreach (var node in filtered)
+                {
+                    var pathKey = NormalizePath(node.FullPath);
+                    if (!uniquePaths.Add(pathKey))
+                    {
+                        continue;
+                    }
+
+                    if (node is FileNode fileNode)
+                    {
+                        var ext = Path.GetExtension(fileNode.Name);
+                        if (!string.IsNullOrEmpty(ext))
+                        {
+                            extensions.Add(ext);
+                        }
+                    }
+
+                    if (node.Size >= minSize && node.Size <= maxSize &&
+                        (selectedExtension == "All" || (node is FileNode && Path.GetExtension(node.Name).Equals(selectedExtension, StringComparison.OrdinalIgnoreCase))))
+                    {
+                        if (string.IsNullOrEmpty(SearchText) || node.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+                        {
+                            tempChildren.Add(node);
+                        }
+                    }
+                }
+
+                foreach (var node in tempChildren)
+                {
+                    _currentChildren.Add(node);
+                }
+
+                foreach (var ext in extensions.OrderBy(e => e))
+                {
+                    AvailableExtensions.Add(ext);
+                }
+            }
+            else
+            {
                 if (_selectedExtension != "All")
                 {
                     _selectedExtension = "All";
@@ -620,58 +690,17 @@ public sealed class MainViewModel : ViewModelBase
                 }
             }
 
-            foreach (var node in filtered)
+            if (_childrenView != null)
             {
-                var pathKey = NormalizePath(node.FullPath);
-                if (!uniquePaths.Add(pathKey))
-                {
-                    continue;
-                }
-
-                if (node is FileNode fileNode)
-                {
-                    var ext = Path.GetExtension(fileNode.Name);
-                    if (!string.IsNullOrEmpty(ext))
-                    {
-                        extensions.Add(ext);
-                    }
-                }
-
-                if (node.Size >= minSize && node.Size <= maxSize &&
-                    (selectedExtension == "All" || (node is FileNode && Path.GetExtension(node.Name).Equals(selectedExtension, StringComparison.OrdinalIgnoreCase))))
-                {
-                    if (string.IsNullOrEmpty(SearchText) || node.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
-                    {
-                        tempChildren.Add(node);
-                    }
-                }
+                _childrenView.Refresh();
             }
 
-            foreach (var node in tempChildren)
-            {
-                _currentChildren.Add(node);
-            }
-
-            foreach (var ext in extensions.OrderBy(e => e))
-            {
-                AvailableExtensions.Add(ext);
-            }
         }
-        else
+        finally
         {
-            if (_selectedExtension != "All")
-            {
-                _selectedExtension = "All";
-                RaisePropertyChanged(nameof(SelectedExtension));
-            }
+            _suppressUpdateCurrentChildren = false;
+            RefreshCommandStates();
         }
-
-        if (_childrenView != null)
-        {
-            _childrenView.Refresh();
-        }
-
-        RefreshCommandStates();
     }
 
     public async Task ScanFolderAsync(string folderPath)
