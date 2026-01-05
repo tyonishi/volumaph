@@ -1,0 +1,51 @@
+<UserControl x:Class="VoluMaph.UI.Controls.TreemapControl"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:ui="clr-namespace:VoluMaph.UI.Behaviors"
+    xmlns:local="clr-namespace:VoluMaph.UI.Controls">
+    <Grid>
+        <Border x:Name="ZoomContainer" ClipToBounds="True">
+            <Border.ContextMenu>
+                <ContextMenu x:Name="TreemapContextMenu">
+                    <MenuItem x:Name="OpenInExplorerMenuItem"
+                              Header="Open in Explorer" />
+                    <MenuItem x:Name="CopyPathMenuItem"
+                              Header="Copy Path" />
+                    <Separator />
+                    <MenuItem x:Name="PropertiesMenuItem"
+                              Header="Properties" />
+                </ContextMenu>
+            </Border.ContextMenu>
+            <Canvas x:Name="TreemapCanvas"
+                    ClipToBounds="True"
+                    ui:ZoomPanBehavior.IsEnabled="True"
+                    ui:ZoomPanBehavior.ZoomLevel="{Binding DataContext.VisualizationViewModel.ZoomLevel, RelativeSource={RelativeSource AncestorType=Window}, Mode=TwoWay}"
+                    ui:ZoomPanBehavior.PanX="{Binding DataContext.VisualizationViewModel.PanX, RelativeSource={RelativeSource AncestorType=Window}, Mode=TwoWay}"
+                    ui:ZoomPanBehavior.PanY="{Binding DataContext.VisualizationViewModel.PanY, RelativeSource={RelativeSource AncestorType=Window}, Mode=TwoWay}" />
+        </Border>
+        <Border x:Name="TooltipBorder"
+                Background="#CC000000"
+                BorderBrush="#FFCCCCCC"
+                BorderThickness="1"
+                CornerRadius="4"
+                Padding="8"
+                Visibility="Collapsed"
+                HorizontalAlignment="Left"
+                VerticalAlignment="Top">
+            <StackPanel>
+                <TextBlock x:Name="TooltipName"
+                          Foreground="White"
+                          FontWeight="Bold"
+                          TextWrapping="Wrap" />
+                <TextBlock x:Name="TooltipSize"
+                          Foreground="White"
+                          Margin="0,4,0,0" />
+                <TextBlock x:Name="TooltipPath"
+                          Foreground="LightGray"
+                          FontSize="11"
+                          Margin="0,2,0,0"
+                          TextWrapping="Wrap" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

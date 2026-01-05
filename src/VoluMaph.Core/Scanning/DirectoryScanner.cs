@@ -59,7 +59,7 @@ public sealed class DirectoryScanner : IScanner
                     _processedFiles++;
                     _processedBytes += file.Size;
 
-                    ReportProgress(progress, filePath);
+                    ReportProgress(progress, filePath, cancellationToken);
                 }
                 catch (UnauthorizedAccessException)
                 {
@@ -104,7 +104,7 @@ public sealed class DirectoryScanner : IScanner
                     folder.AddChild(subFolder);
                     await ScanDirectoryRecursiveAsync(subFolder, progress, cancellationToken).ConfigureAwait(false);
 
-                    ReportProgress(progress, subFolder.FullPath);
+                    ReportProgress(progress, subFolder.FullPath, cancellationToken);
                 }
                 catch (UnauthorizedAccessException)
                 {
@@ -157,12 +157,14 @@ public sealed class DirectoryScanner : IScanner
     /// </summary>
     /// <param name="progress">The progress reporter.</param>
     /// <param name="currentPath">The current path being processed.</param>
-    private void ReportProgress(IProgress<ScanProgress>? progress, string currentPath)
+    /// <param name="cancellationToken">Cancellation token to check after reporting progress.</param>
+    private void ReportProgress(IProgress<ScanProgress>? progress, string currentPath, CancellationToken cancellationToken)
     {
         if (progress != null && (DateTime.UtcNow - _lastProgressReport).TotalMilliseconds > ProgressReportIntervalMs)
         {
             progress.Report(new ScanProgress(currentPath, _processedFiles, _processedBytes));
             _lastProgressReport = DateTime.UtcNow;
+            cancellationToken.ThrowIfCancellationRequested();
         }
     }
 }

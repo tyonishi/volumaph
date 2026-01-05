@@ -1249,6 +1249,33 @@ public sealed class MainViewModel : ViewModelBase
 
 The XAML side can be roughly structured as follows.
 
+### Visualization subsystem (Phase 4 implementation)
+
+- Core (`VoluMaph.Core/Visualization`)
+  - New interfaces: `ITreemapLayout`, `ISunburstLayout`, `IColorMapper`
+  - Implementations: `SquarifiedTreemapLayout.cs`, `PolarSunburstLayout.cs`, `SizeBasedColorMapper.cs`
+  - Design decision: keep layout and geometry calculations in Core to enable headless testing and reuse; UI is responsible for rendering and user interactions.
+
+- UI (`VoluMaph.UI`)
+  - Controls: `TreemapControl`, `SunburstControl`, `ColorLegendControl`
+  - ViewModel: `VisualizationViewModel` (mode switch, zoom/pan, history, bookmarks)
+  - Behaviors: `ZoomPanBehavior` (mouse/keyboard input, clamping, animation)
+
+- Asynchrony and error handling
+  - Layout computations may be offloaded with `Task.Run` for large datasets to avoid blocking the UI thread.
+  - Controls should catch internal exceptions, log detailed traces to the infrastructure logger, and surface brief, localized messages to users.
+
+- Testing and performance
+  - Unit and integration tests: `tests/VoluMaph.Core.Tests/Visualization/*`, `tests/VoluMaph.UI.Tests/Visualization/*`
+  - Continue benchmarking for large data sets (e.g., 100k+ nodes) to monitor memory footprint and layout/render throughput.
+
+- User guide outline
+  - Basic operations: switch visualization mode (Treemap / Sunburst), choose color theme, zoom/pan, drill down
+  - Shortcuts: Home / End / Esc, Undo / Redo
+  - Known caveat: rendering load for very large data sets (see performance notes)
+
+
+
 **Note**: WPF's TreeView SelectedItem property cannot be directly bound. For MVP, handle this in code-behind or use a Behavior.
 
 ```xml

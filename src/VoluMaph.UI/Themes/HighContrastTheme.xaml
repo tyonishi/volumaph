@@ -1,44 +1,97 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
+    <!-- Windows 11 High Contrast Theme -->
+    <!-- WCAG AAA compliant - 7:1+ contrast ratio -->
+
+    <!-- Background Colors -->
     <SolidColorBrush x:Key="WindowBackground" Color="#000000"/>
+    <SolidColorBrush x:Key="WindowBackgroundAlt" Color="#000000"/>
     <SolidColorBrush x:Key="ControlBackground" Color="#000000"/>
+    <SolidColorBrush x:Key="ControlBackgroundAlt" Color="#1A1A1A"/>
+    <SolidColorBrush x:Key="SubtleBackground" Color="#1A1A1A"/>
+    <SolidColorBrush x:Key="SubtleBackgroundHover" Color="#333333"/>
+    <SolidColorBrush x:Key="SubtleBackgroundPressed" Color="#1A1A1A"/>
+    <SolidColorBrush x:Key="LayerBackground" Color="#000000"/>
+    <SolidColorBrush x:Key="CardBackground" Color="#000000"/>
+
+    <!-- Text Colors (WCAG AAA) -->
     <SolidColorBrush x:Key="TextPrimary" Color="#FFFFFF"/>
-    <SolidColorBrush x:Key="TextSecondary" Color="#D0D0D0"/>
-    <SolidColorBrush x:Key="TextDisabled" Color="#808080"/>
+    <SolidColorBrush x:Key="TextSecondary" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="TextTertiary" Color="#CCCCCC"/>
+    <SolidColorBrush x:Key="TextDisabled" Color="#3FF23F"/>
+    <SolidColorBrush x:Key="TextOnAccent" Color="#000000"/>
 
-    <SolidColorBrush x:Key="PrimaryDefault" Color="#FFFFFF"/>
-    <SolidColorBrush x:Key="PrimaryHover" Color="#E0E0E0"/>
-    <SolidColorBrush x:Key="PrimaryPressed" Color="#C0C0C0"/>
-    <SolidColorBrush x:Key="PrimaryDisabled" Color="#404040"/>
+    <!-- Accent/Primary Colors (High visibility) -->
+    <SolidColorBrush x:Key="AccentDefault" Color="#1AEBFF"/>
+    <SolidColorBrush x:Key="PrimaryDefault" Color="#1AEBFF"/>
+    <SolidColorBrush x:Key="PrimaryHover" Color="#00FFFF"/>
+    <SolidColorBrush x:Key="PrimaryPressed" Color="#00D4D4"/>
+    <SolidColorBrush x:Key="PrimaryDisabled" Color="#3FF23F"/>
+    <SolidColorBrush x:Key="PrimaryForeground" Color="#000000"/>
 
+    <!-- Secondary/Subtle -->
     <SolidColorBrush x:Key="SecondaryDefault" Color="#000000"/>
-    <SolidColorBrush x:Key="SecondaryHover" Color="#1A1A1A"/>
-    <SolidColorBrush x:Key="SecondaryPressed" Color="#333333"/>
+    <SolidColorBrush x:Key="SecondaryHover" Color="#333333"/>
+    <SolidColorBrush x:Key="SecondaryPressed" Color="#1A1A1A"/>
+    <SolidColorBrush x:Key="SecondaryDisabled" Color="#000000"/>
 
+    <!-- Danger (Yellow for high contrast) -->
     <SolidColorBrush x:Key="DangerDefault" Color="#FFFF00"/>
-    <SolidColorBrush x:Key="DangerHover" Color="#E0E000"/>
-    <SolidColorBrush x:Key="DangerPressed" Color="#C0C000"/>
+    <SolidColorBrush x:Key="DangerHover" Color="#FFFF66"/>
+    <SolidColorBrush x:Key="DangerPressed" Color="#CCCC00"/>
+    <SolidColorBrush x:Key="DangerBackground" Color="#333300"/>
 
+    <!-- Warning -->
     <SolidColorBrush x:Key="WarningDefault" Color="#FFFF00"/>
-    <SolidColorBrush x:Key="WarningHover" Color="#E0E000"/>
-    <SolidColorBrush x:Key="WarningPressed" Color="#C0C000"/>
+    <SolidColorBrush x:Key="WarningHover" Color="#FFFF66"/>
+    <SolidColorBrush x:Key="WarningPressed" Color="#CCCC00"/>
+    <SolidColorBrush x:Key="WarningBackground" Color="#333300"/>
 
-    <SolidColorBrush x:Key="SuccessDefault" Color="#FFFFFF"/>
-    <SolidColorBrush x:Key="SuccessHover" Color="#E0E0E0"/>
-    <SolidColorBrush x:Key="SuccessPressed" Color="#C0C0C0"/>
+    <!-- Success -->
+    <SolidColorBrush x:Key="SuccessDefault" Color="#3FF23F"/>
+    <SolidColorBrush x:Key="SuccessHover" Color="#66FF66"/>
+    <SolidColorBrush x:Key="SuccessPressed" Color="#00CC00"/>
+    <SolidColorBrush x:Key="SuccessBackground" Color="#003300"/>
 
-    <SolidColorBrush x:Key="InfoDefault" Color="#FFFFFF"/>
-    <SolidColorBrush x:Key="InfoHover" Color="#E0E0E0"/>
-    <SolidColorBrush x:Key="InfoPressed" Color="#C0C0C0"/>
+    <!-- Info -->
+    <SolidColorBrush x:Key="InfoDefault" Color="#1AEBFF"/>
+    <SolidColorBrush x:Key="InfoHover" Color="#00FFFF"/>
+    <SolidColorBrush x:Key="InfoPressed" Color="#00D4D4"/>
+    <SolidColorBrush x:Key="InfoBackground" Color="#003333"/>
 
+    <!-- Border Colors (Strong contrast) -->
     <SolidColorBrush x:Key="BorderDefault" Color="#FFFFFF"/>
     <SolidColorBrush x:Key="BorderHover" Color="#FFFFFF"/>
-    <SolidColorBrush x:Key="BorderFocus" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="BorderFocus" Color="#FFFF00"/>
+    <SolidColorBrush x:Key="BorderStrong" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="CardBorder" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="ControlBorder" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="ControlBorderInput" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="DividerBrush" Color="#FFFFFF"/>
 
+    <!-- Grid/Table Colors -->
     <SolidColorBrush x:Key="GridLineBrush" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="GridHeaderBackground" Color="#1A1A1A"/>
+    <SolidColorBrush x:Key="GridRowAlternate" Color="#0D0D0D"/>
 
-    <SolidColorBrush x:Key="Highlight" Color="#FFFFFF"/>
+    <!-- Selection/Highlight -->
+    <SolidColorBrush x:Key="Highlight" Color="#1AEBFF"/>
     <SolidColorBrush x:Key="HighlightText" Color="#000000"/>
+    <SolidColorBrush x:Key="SelectionBackground" Color="#003366"/>
+    <SolidColorBrush x:Key="SelectionBackgroundPressed" Color="#002244"/>
+    <SolidColorBrush x:Key="HoverBackground" Color="#333333"/>
+
+    <!-- Focus Indicator (High visibility) -->
+    <SolidColorBrush x:Key="FocusBorderColor" Color="#FFFF00"/>
+    <SolidColorBrush x:Key="FocusSecondaryBorder" Color="#000000"/>
+
+    <!-- Scrollbar -->
+    <SolidColorBrush x:Key="ScrollbarThumb" Color="#FFFFFF"/>
+    <SolidColorBrush x:Key="ScrollbarThumbHover" Color="#CCCCCC"/>
+    <SolidColorBrush x:Key="ScrollbarTrack" Color="#333333"/>
+
+    <!-- Shadow (No shadow in high contrast) -->
+    <Color x:Key="ShadowColor">#00000000</Color>
 
 </ResourceDictionary>

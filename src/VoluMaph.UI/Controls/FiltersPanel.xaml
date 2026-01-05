@@ -1,0 +1,87 @@
+<UserControl x:Class="VoluMaph.UI.Controls.FiltersPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d">
+    <Expander Header="Filters"
+              IsExpanded="{Binding IsFiltersExpanded}"
+              Style="{StaticResource FluentExpanderStyle}"
+              AutomationProperties.Name="Filters Panel"
+              AutomationProperties.HelpText="Filter files by size, extension, and date"
+              ToolTip="Expand/collapse filters panel">
+        <Border Background="{DynamicResource SubtleBackground}"
+                CornerRadius="4"
+                Margin="0,8,0,0"
+                Padding="16,12">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- Size Filters Row -->
+                <StackPanel Grid.Row="0" Orientation="Horizontal">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,24,0">
+                        <TextBlock Text="Min Size:"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,12,0"
+                                   Style="{StaticResource BodyTextStyle}"
+                                   Foreground="{DynamicResource TextSecondary}"/>
+                        <TextBox Text="{Binding MinSizeFilter}"
+                                 Width="140"
+                                 Style="{StaticResource FluentTextBoxStyle}"
+                                 AutomationProperties.Name="Minimum Size Filter"
+                                 AutomationProperties.HelpText="Enter minimum file size in bytes"
+                                 ToolTip="Enter minimum file size in bytes (e.g., 1048576 for 1MB)"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal" Margin="0,0,24,0">
+                        <TextBlock Text="Max Size:"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,12,0"
+                                   Style="{StaticResource BodyTextStyle}"
+                                   Foreground="{DynamicResource TextSecondary}"/>
+                        <TextBox Text="{Binding MaxSizeFilter}"
+                                 Width="140"
+                                 Style="{StaticResource FluentTextBoxStyle}"
+                                 AutomationProperties.Name="Maximum Size Filter"
+                                 AutomationProperties.HelpText="Enter maximum file size in bytes"
+                                 ToolTip="Enter maximum file size in bytes (e.g., 104857600 for 100MB)"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <!-- Extension and Date Filters Row -->
+                <StackPanel Grid.Row="1" Orientation="Horizontal" Margin="0,12,0,0">
+                    <StackPanel Orientation="Horizontal" Margin="0,0,24,0">
+                        <TextBlock Text="Extension:"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,12,0"
+                                   Style="{StaticResource BodyTextStyle}"
+                                   Foreground="{DynamicResource TextSecondary}"/>
+                        <ComboBox ItemsSource="{Binding AvailableExtensions}"
+                                  SelectedItem="{Binding SelectedExtension}"
+                                  Width="160"
+                                  Style="{StaticResource FluentComboBoxStyle}"
+                                  AutomationProperties.Name="Extension Filter"
+                                  AutomationProperties.HelpText="Filter by file extension"
+                                  ToolTip="Filter files by extension type"/>
+                    </StackPanel>
+
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="Modified:"
+                                   VerticalAlignment="Center"
+                                   Margin="0,0,12,0"
+                                   Style="{StaticResource BodyTextStyle}"
+                                   Foreground="{DynamicResource TextSecondary}"/>
+                        <ComboBox Width="140"
+                                  Style="{StaticResource FluentComboBoxStyle}"
+                                  AutomationProperties.Name="Date Modified Filter"
+                                  AutomationProperties.HelpText="Filter by date modified"
+                                  ToolTip="Filter files by modification date"/>
+                    </StackPanel>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Expander>
+</UserControl>

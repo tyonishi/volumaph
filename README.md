@@ -10,7 +10,7 @@
 
 VoluMaph (Volume + Map) is a lightweight, high-performance disk usage visualization tool for Windows 10/11. It scans your disk and visualizes folder structures to help you identify space-hungry files and directories quickly.
 
-Inspired by tools like WinTree, VoluMaph focuses on:
+Inspired by tools like WizTree, VoluMaph focuses on:
 - **Fast scanning** - Optimized for performance with large directories
 - **Simple UI** - Clean, intuitive interface
 - **Modern design** - Windows 11 Fluent Design inspired
@@ -47,19 +47,18 @@ Inspired by tools like WinTree, VoluMaph focuses on:
 - ✅ **Context Menus** - Right-click options for file operations
 - ✅ **Keyboard Shortcuts** - F5 (refresh), Escape (cancel), Ctrl+E (CSV), Ctrl+T (theme)
 
+#### Visualization (Phase 4)
+- ✅ **Treemap visualization** - Rectangular partitioning (TreemapControl + SquarifiedTreemapLayout)
+- ✅ **Sunburst chart** - Polar chart with drill-down and breadcrumb
+- ✅ **Size-based color coding** - Multiple themes and gradients
+- ✅ **Interactive zoom & pan** - Smooth zooming, history and bookmarks
+
 #### Export & Operations
 - ✅ **CSV Export** - UTF-8 with BOM for Excel compatibility
 - ✅ **HTML Export** - Styled reports with CSS and responsive design
 - ✅ **Open in Explorer** - Navigate to selected file/folder
 - ✅ **Copy Path/Name** - Quick copy to clipboard
 - ✅ **Screenshot** - Capture current view
-
-### Planned Features
-- 🔲 **Treemap Visualization** - Rectangular space visualization
-- 🔲 **NTFS MFT Scanning** - Ultra-fast scan mode
-- 🔲 **File Operations** - Delete files directly from UI
-- 🔲 **Sunburst Chart** - Circular hierarchical visualization
-- 🔲 **Interactive Zooming** - Navigate large datasets more efficiently
 
 ## 📸 Screenshots
 
@@ -153,12 +152,12 @@ volumaph/
  │   │   └─ Settings/
  │   └─ VoluMaph.UI/            # WPF UI + MVVM
  │       ├─ Commands/           # Command implementations
- │       ├─ Themes/              # Dark/Light theme resources
- │       ├─ ValueConverters/     # Data binding converters
- │       └─ ViewModels/          # MVVM ViewModels
+ │       ├─ Themes/             # Dark/Light theme resources
+ │       ├─ ValueConverters/    # Data binding converters
+ │       └─ ViewModels/         # MVVM ViewModels
  ├─ tests/                      # Unit tests
  ├─ docs/                       # Documentation
- └── AGENTS.md                   # Agent development rules
+ └── AGENTS.md                  # Agent development rules
 ```
 
 ### Building
@@ -186,97 +185,12 @@ dotnet test tests/VoluMaph.UI.Tests
 
 # Run tests with detailed output
 dotnet test --logger "console;verbosity=detailed"
-
-# Run tests with coverage (requires coverlet)
-dotnet test --collect:"XPlat Code Coverage"
 ```
 
 **Test Coverage:**
 - **VoluMaph.Core**: 34 tests covering models, scanning, and analysis
 - **VoluMaph.UI**: 35 tests covering ViewModels and exports
-- **Total**: 69 tests across all modules
-- **Coverage Areas**: File/Folder models, DirectoryScanner, FolderAnalyzer, ExtensionAnalyzer, DuplicateDetector, MainViewModel, Export functionality
-
-### Code Style
-
-We follow these conventions:
-- **PascalCase** for classes, methods, properties
-- **_camelCase** for private fields
-- **camelCase** for local variables
-- No unnecessary comments
-- Single space indentation
-- Newline at end of file
-
-See [AGENTS.md](AGENTS.md) for detailed coding standards.
-
-### Architecture
-
-VoluMaph follows a clean architecture with three main layers:
-
-```mermaid
-graph TB
-    UI[VoluMaph.UI<br/>WPF + MVVM]
-    Core[VoluMaph.Core<br/>Scanning & Analysis]
-    Infra[VoluMaph.Infrastructure<br/>Settings & Logging]
-
-    UI -->|uses| Core
-    UI -->|uses| Infra
-```
-
-**Key Principles:**
-- **Loose Coupling** - Core logic independent of UI
-- **CQRS** - Separation of read (scanning) and write (UI updates)
-- **Async/Await** - All file operations are asynchronous
-- **MVVM** - UI uses Model-View-ViewModel pattern
-
-## 🗺️ Roadmap
-
-### ✅ Phase 1: MVP (Complete)
-- Basic disk scanning
-- Tree view display
-- Size aggregation
-- UI framework
-- Basic filtering and sorting
-- Export to CSV/HTML
-- Theme support
-
-### 🔨 Phase 2: Advanced Analysis (Complete)
-- Duplicate file detection (by size and hash)
-- Extension analysis with statistics
-- Advanced date filtering
-- File age analysis
-- Comprehensive test coverage (69 tests)
-
-### ✅ Phase 3: Fluent Design UI/UX (Complete)
-- Color system and typography
-- Button styles (Primary, Secondary, Icon)
-- Segoe MDL2 icon system
-- Toolbar restructure (4 groups)
-- Split panes with GridSplitter
-- Summary panel and filter panel
-- DataGrid styling (header sort indicators)
-- TreeView styling (icons, expand/collapse animations)
-- Enhanced progress bar (shimmer animation, time estimate, file count)
-- ComboBox, TextBox, Expander styles
-- Micro-interactions (hover/press effects)
-- Accessibility properties (AutomationProperties, focus indicators)
-- Cancel button, tooltips, enhanced keyboard navigation
-- Toast notifications
-- Context menu
-- Drag & drop
-- Screenshot
-
-### 🔮 Phase 4: Advanced Visualization (Planned)
-- Treemap view
-- Size-based color coding
-- Sunburst chart
-- Interactive zooming
-
-### 🚀 Phase 5: Advanced Features (Planned)
-- NTFS MFT fast scan
-- File deletion from UI
-- Bookmark favorite folders
-- Search across entire scan
+- **Total**: 69 tests
 
 ## 🤝 Contributing
 
@@ -315,27 +229,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 🙏 Acknowledgments
 
-- Inspired by [WinTree](https://antibody-software.com/wiztree/) for the concept of fast disk scanning
+- Inspired by [WizTree](https://antibody-software.com/wiztree/) for the concept of fast disk scanning
 - Built with [WPF](https://docs.microsoft.com/en-us/dotnet/desktop/wpf/) and [.NET 8](https://dotnet.microsoft.com/)
 - MVVM pattern implementation
 - Icons from [Fluent UI System Icons](https://github.com/microsoft/fluentui-system-icons)
-
-## 📞 Support
-
-- 📧 Email: support@capricornus.biz
-- 💬 Discussions: [GitHub Discussions](https://github.com/tyonishi/volumaph/discussions)
-- 📖 Documentation: [docs/](docs/)
-- 🐛 Issues: [GitHub Issues](https://github.com/tyonishi/volumaph/issues)
-
-## 🌟 Star History
-
-<a href="https://star-history.com/#tyonishi/volumaph&Date">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" src="https://api.star-history.com/svg?repos=tyonishi/volumaph&type=Date&theme=dark" />
-    <source media="(prefers-color-scheme: light)" src="https://api.star-history.com/svg?repos=tyonishi/volumaph&type=Date" />
-    <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=tyonishi/volumaph&type=Date" />
-  </picture>
-</a>
 
 ---
 

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -11,11 +12,13 @@ using System.Windows.Data;
 using System.Windows.Input;
 using System.Windows.Media;
 using VoluMaph.Core.Analysis;
+using VoluMaph.Core.Color;
 using VoluMaph.Core.Model;
 using VoluMaph.Core.Scanning;
 using VoluMaph.Infrastructure.Logging;
 using VoluMaph.Infrastructure.Settings;
 using VoluMaph.UI.Commands;
+using VoluMaph.UI.Services;
 
 namespace VoluMaph.UI.ViewModels;
 
@@ -28,10 +31,12 @@ public sealed class MainViewModel : ViewModelBase
     private readonly IDuplicateDetector _duplicateDetector;
     private readonly ISettingsProvider _settingsProvider;
     private readonly ILogger _logger;
+    private readonly VisualizationViewModel _visualizationViewModel;
 
     private FolderNode? _rootFolder;
     private FileSystemNode? _selectedNode;
     private bool _isScanning;
+    private bool _isScanJustCompleted;
     private double _progress;
     private string _statusMessage = string.Empty;
     private CancellationTokenSource? _cancellationTokenSource;
@@ -49,6 +54,10 @@ public sealed class MainViewModel : ViewModelBase
     private string _selectedExtension = string.Empty;
     private string _sortColumn = "Size";
     private ListSortDirection _sortDirection = ListSortDirection.Descending;
+    private ColorTheme _colorTheme = ColorTheme.Heatmap;
+    private bool _showVisualization = false;
+    // Suppress re-entrant UpdateCurrentChildren calls when we programmatically update filter collections
+    private bool _suppressUpdateCurrentChildren = false;
 
     public sealed class ColumnDefinition
     {
@@ -62,7 +71,9 @@ public sealed class MainViewModel : ViewModelBase
     private ICollectionView? _childrenView;
 
     public ObservableCollection<string> AvailableDrives { get; } = new();
+    public ObservableCollection<ColorTheme> AvailableColorThemes { get; } = new();
     public ObservableCollection<FileSystemNode> CurrentChildren => _currentChildren;
+    public VisualizationViewModel VisualizationViewModel => _visualizationViewModel;
     public ICollectionView ChildrenView
     {
         get
@@ -92,8 +103,10 @@ public sealed class MainViewModel : ViewModelBase
             RaisePropertyChanged(nameof(TotalFolders));
             RaisePropertyChanged(nameof(LargestFile));
             RaisePropertyChanged(nameof(LargestFileSize));
+            RefreshCommandStates();
         }
     }
+
 
     public FileSystemNode? SelectedNode
     {
@@ -103,8 +116,10 @@ public sealed class MainViewModel : ViewModelBase
             _selectedNode = value;
             RaisePropertyChanged();
             UpdateCurrentChildren();
+            RefreshCommandStates();
         }
     }
+
 
     public bool IsScanning
     {
@@ -113,8 +128,15 @@ public sealed class MainViewModel : ViewModelBase
         {
             _isScanning = value;
             RaisePropertyChanged();
+            RefreshCommandStates();
             CommandManager.InvalidateRequerySuggested();
         }
+    }
+
+    public bool IsScanJustCompleted
+    {
+        get => _isScanJustCompleted;
+        private set { _isScanJustCompleted = value; RaisePropertyChanged(); }
     }
 
     public double Progress
@@ -136,8 +158,10 @@ public sealed class MainViewModel : ViewModelBase
         {
             _selectedDrive = value;
             RaisePropertyChanged();
+            RefreshCommandStates();
         }
     }
+
 
     public string SearchText
     {
@@ -165,6 +189,33 @@ public sealed class MainViewModel : ViewModelBase
     }
 
     public string ToggleThemeText => IsDarkTheme ? "☀ ライトモードに切り替え" : "🌙 ダークモードに切り替え";
+
+    public ColorTheme ColorTheme
+    {
+        get => _colorTheme;
+        set
+        {
+            if (_colorTheme != value)
+            {
+                _colorTheme = value;
+                _visualizationViewModel.ColorTheme = value;
+                RaisePropertyChanged();
+            }
+        }
+    }
+
+    public bool ShowVisualization
+    {
+        get => _showVisualization;
+        set
+        {
+            if (_showVisualization != value)
+            {
+                _showVisualization = value;
+                RaisePropertyChanged();
+            }
+        }
+    }
 
     public int? ModifiedAfterDays
     {
@@ -287,7 +338,10 @@ public sealed class MainViewModel : ViewModelBase
             _selectedExtension = value;
             RaisePropertyChanged();
             RaisePropertyChanged(nameof(HasActiveFilters));
-            UpdateCurrentChildren();
+            if (!_suppressUpdateCurrentChildren)
+            {
+                UpdateCurrentChildren();
+            }
         }
     }
 
@@ -371,13 +425,62 @@ public sealed class MainViewModel : ViewModelBase
     public ICommand DetectDuplicatesBySizeCommand { get; } = default!;
     public ICommand DetectDuplicatesByHashCommand { get; } = default!;
     public ICommand ClearFiltersCommand { get; } = default!;
+    public ICommand ToggleVisualizationCommand { get; } = default!;
+    public ICommand ScreenshotCommand { get; } = default!;
+
+    public event Action? ScreenshotRequested;
+    public IDialogService? DialogService { get; set; }
+
 
     private void ShowToast(string message, string icon = "\xE8FB", Brush? iconColor = null)
     {
         ShowToastRequested?.Invoke(message, icon, iconColor);
     }
 
+    private void RefreshCommandStates()
+    {
+        (ScanCommand as AsyncRelayCommand)?.RaiseCanExecuteChanged();
+        (CancelCommand as RelayCommand)?.RaiseCanExecuteChanged();
+        (RefreshCommand as AsyncRelayCommand)?.RaiseCanExecuteChanged();
+        (OpenInExplorerCommand as RelayCommand)?.RaiseCanExecuteChanged();
+        (CopyPathCommand as RelayCommand)?.RaiseCanExecuteChanged();
+        (CopyNameCommand as RelayCommand)?.RaiseCanExecuteChanged();
+        (ExportToCsvCommand as AsyncRelayCommand)?.RaiseCanExecuteChanged();
+        (ExportToHtmlCommand as AsyncRelayCommand)?.RaiseCanExecuteChanged();
+        (AnalyzeExtensionsCommand as AsyncRelayCommand)?.RaiseCanExecuteChanged();
+        (DetectDuplicatesBySizeCommand as AsyncRelayCommand)?.RaiseCanExecuteChanged();
+        (DetectDuplicatesByHashCommand as AsyncRelayCommand)?.RaiseCanExecuteChanged();
+        (ToggleVisualizationCommand as RelayCommand)?.RaiseCanExecuteChanged();
+        (ScreenshotCommand as RelayCommand)?.RaiseCanExecuteChanged();
+    }
+
+    private static string NormalizePath(string path)
+    {
+        try
+        {
+            // Resolve to full absolute path and trim any trailing separators for a consistent key
+            var full = Path.GetFullPath(path);
+            return full.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        }
+        catch
+        {
+            // Fall back to best-effort trimming if GetFullPath fails for any reason
+            return path.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
+        }
+    }
+
+    private static string GetDefaultExportPath(string extension)
+    {
+        var exportDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "VoluMaph");
+        Directory.CreateDirectory(exportDirectory);
+        var fileName = extension.Equals("csv", StringComparison.OrdinalIgnoreCase)
+            ? $"VoluMaph_Export_{DateTime.Now:yyyyMMdd_HHmmss}.csv"
+            : $"VoluMaph_Report_{DateTime.Now:yyyyMMdd_HHmmss}.html";
+        return Path.Combine(exportDirectory, fileName);
+    }
+
     public MainViewModel(
+
         IScanner scanner,
         IFolderAnalyzer analyzer,
         IExtensionAnalyzer extensionAnalyzer,
@@ -392,8 +495,10 @@ public sealed class MainViewModel : ViewModelBase
         _settingsProvider = settingsProvider;
         _logger = logger;
         _currentChildren = new ObservableCollection<FileSystemNode>();
+        _visualizationViewModel = new VisualizationViewModel();
 
         InitializeColumnDefinitions();
+        InitializeColorThemes();
         LoadDrives();
         LoadSettings();
 
@@ -413,6 +518,8 @@ public sealed class MainViewModel : ViewModelBase
         DetectDuplicatesBySizeCommand = new AsyncRelayCommand(async _ => await DetectDuplicatesBySizeAsync(), _ => !IsScanning && RootFolder != null);
         DetectDuplicatesByHashCommand = new AsyncRelayCommand(async _ => await DetectDuplicatesByHashAsync(), _ => !IsScanning && RootFolder != null);
         ClearFiltersCommand = new RelayCommand(_ => ClearFilters());
+        ToggleVisualizationCommand = new RelayCommand(_ => ToggleVisualization(), _ => RootFolder != null);
+        ScreenshotCommand = new RelayCommand(_ => ScreenshotRequested?.Invoke(), _ => CurrentChildren.Count > 0);
     }
 
     private void InitializeColumnDefinitions()
@@ -421,6 +528,15 @@ public sealed class MainViewModel : ViewModelBase
         ColumnDefinitions.Add(new ColumnDefinition { Header = "Name", Binding = "Name", IsVisible = true, Width = double.NaN });
         ColumnDefinitions.Add(new ColumnDefinition { Header = "Size", Binding = "Size", IsVisible = true, Width = 120 });
         ColumnDefinitions.Add(new ColumnDefinition { Header = "Path", Binding = "FullPath", IsVisible = true, Width = double.NaN });
+    }
+
+    private void InitializeColorThemes()
+    {
+        AvailableColorThemes.Clear();
+        foreach (ColorTheme theme in Enum.GetValues(typeof(ColorTheme)))
+        {
+            AvailableColorThemes.Add(theme);
+        }
     }
 
     private void LoadDrives()
@@ -485,82 +601,105 @@ public sealed class MainViewModel : ViewModelBase
 
     private void UpdateCurrentChildren()
     {
-        _currentChildren.Clear();
-        AvailableExtensions.Clear();
-        AvailableExtensions.Add("All");
-  
-        if (SelectedNode is FolderNode folder)
+        // Prevent re-entrant calls (e.g. AvailableExtensions update -> ComboBox SelectedItem changed -> SelectedExtension setter)
+        if (_suppressUpdateCurrentChildren)
         {
-            var criteria = new FilterCriteria
+            return;
+        }
+
+        _suppressUpdateCurrentChildren = true;
+        try
+        {
+            _currentChildren.Clear();
+            AvailableExtensions.Clear();
+            AvailableExtensions.Add("All");
+
+            if (SelectedNode is FolderNode folder)
             {
-                ModifiedAfterDays = ModifiedAfterDays,
-                ModifiedBeforeDays = ModifiedBeforeDays,
-                CreatedAfterDays = CreatedAfterDays,
-                CreatedBeforeDays = CreatedBeforeDays,
-                IncludeFiles = true,
-                IncludeFolders = true
-            };
-  
-            var filtered = _analyzer.Filter(folder, criteria);
-            var extensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            var tempChildren = new List<FileSystemNode>();
-  
-            var minSize = long.TryParse(MinSizeFilter, out var min) ? min : 0;
-            var maxSize = long.TryParse(MaxSizeFilter, out var max) ? max : long.MaxValue;
-            var selectedExtension = SelectedExtension;
-            if (string.IsNullOrEmpty(selectedExtension))
+                var criteria = new FilterCriteria
+                {
+                    ModifiedAfterDays = ModifiedAfterDays,
+                    ModifiedBeforeDays = ModifiedBeforeDays,
+                    CreatedAfterDays = CreatedAfterDays,
+                    CreatedBeforeDays = CreatedBeforeDays,
+                    IncludeFiles = true,
+                    IncludeFolders = true
+                };
+
+                var filtered = _analyzer.Filter(folder, criteria);
+                var extensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                var tempChildren = new List<FileSystemNode>();
+                var uniquePaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+                var minSize = long.TryParse(MinSizeFilter, out var min) ? min : 0;
+                var maxSize = long.TryParse(MaxSizeFilter, out var max) ? max : long.MaxValue;
+                var selectedExtension = SelectedExtension;
+                if (string.IsNullOrEmpty(selectedExtension))
+                {
+                    selectedExtension = "All";
+                    if (_selectedExtension != "All")
+                    {
+                        _selectedExtension = "All";
+                        RaisePropertyChanged(nameof(SelectedExtension));
+                    }
+                }
+
+                foreach (var node in filtered)
+                {
+                    var pathKey = NormalizePath(node.FullPath);
+                    if (!uniquePaths.Add(pathKey))
+                    {
+                        continue;
+                    }
+
+                    if (node is FileNode fileNode)
+                    {
+                        var ext = Path.GetExtension(fileNode.Name);
+                        if (!string.IsNullOrEmpty(ext))
+                        {
+                            extensions.Add(ext);
+                        }
+                    }
+
+                    if (node.Size >= minSize && node.Size <= maxSize &&
+                        (selectedExtension == "All" || (node is FileNode && Path.GetExtension(node.Name).Equals(selectedExtension, StringComparison.OrdinalIgnoreCase))))
+                    {
+                        if (string.IsNullOrEmpty(SearchText) || node.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
+                        {
+                            tempChildren.Add(node);
+                        }
+                    }
+                }
+
+                foreach (var node in tempChildren)
+                {
+                    _currentChildren.Add(node);
+                }
+
+                foreach (var ext in extensions.OrderBy(e => e))
+                {
+                    AvailableExtensions.Add(ext);
+                }
+            }
+            else
             {
-                selectedExtension = "All";
                 if (_selectedExtension != "All")
                 {
                     _selectedExtension = "All";
                     RaisePropertyChanged(nameof(SelectedExtension));
                 }
             }
-  
-            foreach (var node in filtered)
-            {
-                if (node is FileNode fileNode)
-                {
-                    var ext = Path.GetExtension(fileNode.Name);
-                    if (!string.IsNullOrEmpty(ext))
-                    {
-                        extensions.Add(ext);
-                    }
-                }
-  
-                if (node.Size >= minSize && node.Size <= maxSize &&
-                    (selectedExtension == "All" || (node is FileNode && Path.GetExtension(node.Name).Equals(selectedExtension, StringComparison.OrdinalIgnoreCase))))
-                {
-                    if (string.IsNullOrEmpty(SearchText) || node.Name.Contains(SearchText, StringComparison.OrdinalIgnoreCase))
-                    {
-                        tempChildren.Add(node);
-                    }
-                }
-            }
-  
-            foreach (var node in tempChildren)
-            {
-                _currentChildren.Add(node);
-            }
-  
-            foreach (var ext in extensions.OrderBy(e => e))
-            {
-                AvailableExtensions.Add(ext);
-            }
-        }
-        else
-        {
-            if (_selectedExtension != "All")
-            {
-                _selectedExtension = "All";
-                RaisePropertyChanged(nameof(SelectedExtension));
-            }
-        }
 
-        if (_childrenView != null)
+            if (_childrenView != null)
+            {
+                _childrenView.Refresh();
+            }
+
+        }
+        finally
         {
-            _childrenView.Refresh();
+            _suppressUpdateCurrentChildren = false;
+            RefreshCommandStates();
         }
     }
 
@@ -594,8 +733,12 @@ public sealed class MainViewModel : ViewModelBase
             var root = await Task.Run(() => _scanner.ScanAsync(path, progress, _cancellationTokenSource.Token), _cancellationTokenSource.Token);
             await Task.Run(() => _analyzer.AggregateFolderSizes(root), _cancellationTokenSource.Token);
             root?.SortChildren();
+            _visualizationViewModel.RootFolder = root;
             StatusMessage = "Scan completed.";
             Progress = 100;
+            _isScanJustCompleted = true;
+            SelectedNode = root;
+            _isScanJustCompleted = false;
             ShowToast("Scan completed successfully", "\xE8FB", new SolidColorBrush(Colors.Green));
             return root;
         }
@@ -738,10 +881,20 @@ public sealed class MainViewModel : ViewModelBase
 
         if (string.IsNullOrEmpty(filePath))
         {
-            // Note: In a real WPF application, you would use SaveFileDialog here
-            // For this console-based tool, we'll use a default filename
-            filePath = $"VoluMaph_Export_{DateTime.Now:yyyyMMdd_HHmmss}.csv";
+            if (DialogService != null)
+            {
+                var defaultName = $"VoluMaph_Export_{DateTime.Now:yyyyMMdd_HHmmss}.csv";
+                var chosen = DialogService.ShowSaveFile(defaultName, "CSV Files (*.csv)|*.csv|All Files (*.*)|*.*");
+                if (string.IsNullOrEmpty(chosen))
+                    return; // cancelled
+                filePath = chosen;
+            }
+            else
+            {
+                filePath = GetDefaultExportPath("csv");
+            }
         }
+
 
         try
         {
@@ -798,10 +951,20 @@ public sealed class MainViewModel : ViewModelBase
 
         if (string.IsNullOrEmpty(filePath))
         {
-            // Note: In a real WPF application, you would use SaveFileDialog here
-            // For this console-based tool, we'll use a default filename
-            filePath = $"VoluMaph_Report_{DateTime.Now:yyyyMMdd_HHmmss}.html";
+            if (DialogService != null)
+            {
+                var defaultName = $"VoluMaph_Report_{DateTime.Now:yyyyMMdd_HHmmss}.html";
+                var chosen = DialogService.ShowSaveFile(defaultName, "HTML Files (*.html;*.htm)|*.html;*.htm|All Files (*.*)|*.*");
+                if (string.IsNullOrEmpty(chosen))
+                    return; // cancelled
+                filePath = chosen;
+            }
+            else
+            {
+                filePath = GetDefaultExportPath("html");
+            }
         }
+
 
         try
         {
@@ -981,6 +1144,12 @@ public sealed class MainViewModel : ViewModelBase
         CreatedBeforeDays = null;
         SearchText = string.Empty;
         StatusMessage = "Filters cleared.";
+    }
+
+    private void ToggleVisualization()
+    {
+        ShowVisualization = !ShowVisualization;
+        StatusMessage = ShowVisualization ? "Visualization enabled" : "Visualization disabled";
     }
 
     private static int CountFiles(FolderNode folder)

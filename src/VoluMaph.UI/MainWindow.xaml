@@ -4,321 +4,87 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:VoluMaph.UI"
-        xmlns:converters="clr-namespace:VoluMaph.UI.ValueConverters"
+        
         xmlns:helpers="clr-namespace:VoluMaph.UI.Helpers"
         xmlns:ui="clr-namespace:VoluMaph.UI.Controls"
         mc:Ignorable="d"
-        Title="VoluMaph" Height="700" Width="1200"
+        Title="VoluMaph" Height="750" Width="1280"
+        MinHeight="600" MinWidth="900"
         Background="{DynamicResource WindowBackground}"
-        WindowStartupLocation="CenterScreen">
+        WindowStartupLocation="CenterScreen"
+        FontFamily="Segoe UI Variable Text, Segoe UI, sans-serif">
     <Window.Resources>
-        <converters:SizeToHumanReadableConverter x:Key="SizeConverter"/>
-        <converters:SizeToColorConverter x:Key="ColorConverter"/>
-        <converters:IconConverter x:Key="IconConverter"/>
-        <converters:CountToBoolConverter x:Key="CountToBoolConverter"/>
-        <converters:BoolToVisibilityConverter x:Key="BoolToVisibilityConverter"/>
         <Style x:Key="SizeCellStyle" TargetType="TextBlock">
             <Setter Property="Foreground" Value="{Binding Size, Converter={StaticResource ColorConverter}}"/>
         </Style>
     </Window.Resources>
     <Window.InputBindings>
-		<KeyBinding Key="E" Modifiers="Control" Command="{Binding ExportToCsvCommand}"/>
-		<KeyBinding Key="F" Modifiers="Control"/>
-		<KeyBinding Key="Escape" Command="{Binding CancelCommand}"/>
-		<KeyBinding Key="F5" Command="{Binding RefreshCommand}"/>
-		<KeyBinding Key="F5" Modifiers="Control" Command="{Binding ScanCommand}"/>
-		<KeyBinding Key="T" Modifiers="Control" Command="{Binding ToggleThemeCommand}"/>
-	</Window.InputBindings>
-    <Grid AllowDrop="True" Drop="Grid_Drop" DragOver="Grid_DragOver"
+        <KeyBinding Key="E" Modifiers="Control" Command="{Binding ExportToCsvCommand}"/>
+        <KeyBinding Key="F" Modifiers="Control"/>
+        <KeyBinding Key="Escape" Command="{Binding CancelCommand}"/>
+        <KeyBinding Key="F5" Command="{Binding RefreshCommand}"/>
+        <KeyBinding Key="F5" Modifiers="Control" Command="{Binding ScanCommand}"/>
+        <KeyBinding Key="T" Modifiers="Control" Command="{Binding ToggleThemeCommand}"/>
+        <KeyBinding Key="Home" Command="{Binding VisualizationViewModel.ResetZoomCommand}"/>
+        <KeyBinding Key="End" Command="{Binding VisualizationViewModel.MaxZoomCommand}"/>
+    </Window.InputBindings>
+
+    <Grid Name="MainGrid" AllowDrop="True" Drop="Grid_Drop" DragOver="Grid_DragOver"
          Background="{DynamicResource WindowBackground}"
          KeyDown="Window_KeyDown">
-		<Grid.RowDefinitions>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="Auto"/>
-			<RowDefinition Height="*"/>
-			<RowDefinition Height="Auto"/>
-		</Grid.RowDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
 
-		<Canvas Grid.RowSpan="5" Name="ToastCanvas" Panel.ZIndex="9999" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+        <Canvas Grid.RowSpan="5" Name="ToastCanvas" Panel.ZIndex="9999" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
 
-        <ToolBar Grid.Row="0" Background="{DynamicResource WindowBackground}" BorderBrush="{DynamicResource BorderDefault}" BorderThickness="0,0,0,1" Padding="8">
-            <ComboBox Width="150" ItemsSource="{Binding AvailableDrives}" SelectedItem="{Binding SelectedDrive}" Background="{DynamicResource ControlBackground}" Foreground="{DynamicResource TextPrimary}" BorderBrush="{DynamicResource BorderDefault}" BorderThickness="1" Padding="8" Style="{StaticResource FluentComboBoxStyle}"
-                      AutomationProperties.Name="Drive Selection"
-                      AutomationProperties.HelpText="Select a drive to scan"
-                      ToolTip="Select a drive to scan"/>
-             <Button Command="{Binding ScanCommand}" Style="{StaticResource PrimaryButtonStyle}" Margin="4"
-                    AutomationProperties.Name="Scan Button"
-                    AutomationProperties.HelpText="Start scanning the selected drive"
-                    ToolTip="Start scanning the selected drive (F5)">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="20" Margin="0,0,8,0" Text="{x:Static helpers:FluentIcons.Scan}"/>
-                    <TextBlock Text="Scan"/>
-                </StackPanel>
-            </Button>
-            <Button Command="{Binding CancelCommand}" Style="{StaticResource DangerButtonStyle}" Margin="4"
-                    AutomationProperties.Name="Cancel Button"
-                    AutomationProperties.HelpText="Cancel the current scan"
-                    ToolTip="Cancel the current scan (Escape)">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="20" Margin="0,0,8,0" Text="{x:Static helpers:FluentIcons.Cancel}"/>
-                    <TextBlock Text="Cancel"/>
-                </StackPanel>
-            </Button>
-            <Button Command="{Binding RefreshCommand}" Style="{StaticResource SecondaryButtonStyle}" Margin="4"
-                    AutomationProperties.Name="Refresh Button"
-                    AutomationProperties.HelpText="Refresh the current view"
-                    ToolTip="Refresh the current view (F5)">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="20" Margin="0,0,8,0" Text="{x:Static helpers:FluentIcons.Refresh}"/>
-                    <TextBlock Text="Refresh"/>
-                </StackPanel>
-            </Button>
+        <ui:CommandBarControl Grid.Row="0" x:Name="CommandBar"/>
 
-            <Separator/>
 
-            <TextBox Width="200" Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Margin="4" ToolTip="Search by file/folder name (Ctrl+F)" Style="{StaticResource FluentTextBoxStyle}"
-                     AutomationProperties.Name="Search Box"
-                     AutomationProperties.HelpText="Search files and folders by name"
-                     Name="SearchTextBox"/>
-            <Button Command="{Binding ToggleFiltersCommand}" Style="{StaticResource SecondaryButtonStyle}" Margin="4"
-                    AutomationProperties.Name="Filters Button"
-                    AutomationProperties.HelpText="Toggle filter panel visibility"
-                    ToolTip="Show/hide filter panel">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="20" Margin="0,0,8,0" Text="{x:Static helpers:FluentIcons.Filter}"/>
-                    <TextBlock Text="Filters"/>
-                    <Ellipse Width="8" Height="8" Fill="{DynamicResource DangerDefault}" Margin="8,0,0,0"
-                             Visibility="{Binding HasActiveFilters, Converter={StaticResource BoolToVisibilityConverter}}"/>
-                </StackPanel>
-            </Button>
+        <!-- Summary Panel (extracted) -->
+        <ui:SummaryPanel Grid.Row="1" Margin="16,12,16,0"/>
 
-            <Separator/>
+        <!-- Filters Panel (extracted) -->
+        <ui:FiltersPanel Grid.Row="2" Margin="16,8,16,0"/>
 
-            <Button Command="{Binding ToggleThemeCommand}" Style="{StaticResource SecondaryButtonStyle}" Margin="4"
-                    AutomationProperties.Name="Theme Toggle Button"
-                    AutomationProperties.HelpText="Switch between light and dark theme"
-                    ToolTip="Switch between light and dark theme">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="20" Margin="0,0,8,0" Text="{x:Static helpers:FluentIcons.Light}"/>
-                    <TextBlock Text="Theme"/>
-                </StackPanel>
-            </Button>
 
-            <Separator/>
+        <!-- Main Content Area -->
+        <Grid Grid.Row="3" Margin="16,12,16,8">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="2*" MinWidth="280"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="3*" MinWidth="400"/>
+            </Grid.ColumnDefinitions>
 
-            <Button Command="{Binding ExportToCsvCommand}" Style="{StaticResource SecondaryButtonStyle}" Margin="4"
-                    AutomationProperties.Name="Export to CSV Button"
-                    AutomationProperties.HelpText="Export current view to CSV file"
-                    ToolTip="Export current view to CSV file (Ctrl+E)">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="20" Margin="0,0,8,0" Text="{x:Static helpers:FluentIcons.CSV}"/>
-                    <TextBlock Text="CSV"/>
-                </StackPanel>
-            </Button>
-            <Button Command="{Binding ExportToHtmlCommand}" Style="{StaticResource SecondaryButtonStyle}" Margin="4"
-                    AutomationProperties.Name="Export to HTML Button"
-                    AutomationProperties.HelpText="Export current view to HTML file"
-                    ToolTip="Export current view to HTML file">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="20" Margin="0,0,8,0" Text="{x:Static helpers:FluentIcons.HTML}"/>
-                    <TextBlock Text="HTML"/>
-                </StackPanel>
-            </Button>
-            <Button Click="Screenshot_Click" IsEnabled="{Binding CurrentChildren.Count, Converter={StaticResource CountToBoolConverter}}" Style="{StaticResource SecondaryButtonStyle}" Margin="4"
-                    AutomationProperties.Name="Screenshot Button"
-                    AutomationProperties.HelpText="Take a screenshot of the current view"
-                    ToolTip="Take a screenshot of the current view">
-                <StackPanel Orientation="Horizontal">
-                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="20" Margin="0,0,8,0" Text="{x:Static helpers:FluentIcons.Screenshot}"/>
-                    <TextBlock Text="Screenshot"/>
-                </StackPanel>
-            </Button>
-        </ToolBar>
+            <!-- Grid Splitter with subtle styling -->
+            <GridSplitter Grid.Column="1"
+                          Width="6"
+                          Background="Transparent"
+                          HorizontalAlignment="Center"
+                          ShowsPreview="True"
+                          Cursor="SizeWE">
+                <GridSplitter.Template>
+                    <ControlTemplate TargetType="GridSplitter">
+                        <Border Background="Transparent" Padding="2,0">
+                            <Rectangle Width="2"
+                                       Fill="{DynamicResource DividerBrush}"
+                                       RadiusX="1"
+                                       RadiusY="1"/>
+                        </Border>
+                    </ControlTemplate>
+                </GridSplitter.Template>
+            </GridSplitter>
 
-        <Expander Grid.Row="1"
-                  Header="Summary"
-                  IsExpanded="{Binding IsSummaryExpanded}"
-                  Margin="0,8,0,8"
-                  Style="{StaticResource FluentExpanderStyle}"
-                  AutomationProperties.Name="Summary Panel"
-                  AutomationProperties.HelpText="Shows disk usage summary statistics"
-                  ToolTip="Expand/collapse summary panel">
-            <UniformGrid Columns="4" Margin="16" HorizontalAlignment="Stretch">
-              <ui:SummaryCard Title="Total Size" Value="{Binding TotalSize, Converter={StaticResource SizeConverter}}"/>
-              <ui:SummaryCard Title="Total Files" Value="{Binding TotalFiles, StringFormat={}{0:N0}}"/>
-              <ui:SummaryCard Title="Total Folders" Value="{Binding TotalFolders, StringFormat={}{0:N0}}"/>
-              <ui:SummaryCard Title="Largest File" Value="{Binding LargestFileSize, Converter={StaticResource SizeConverter}}" Subtitle="{Binding LargestFile}"/>
-            </UniformGrid>
-        </Expander>
+            <ui:FolderTreeControl Grid.Column="0" x:Name="FolderTree"/>
+            <ui:DetailsPaneControl Grid.Column="2" x:Name="DetailsPane"/>
+        </Grid>
 
-        <Expander Grid.Row="2"
-                  Header="Filters"
-                  IsExpanded="{Binding IsFiltersExpanded}"
-                  Margin="0,0,0,8"
-                  Style="{StaticResource FluentExpanderStyle}"
-                  AutomationProperties.Name="Filters Panel"
-                  AutomationProperties.HelpText="Filter files by size, extension, and date"
-                  ToolTip="Expand/collapse filters panel">
-            <Grid Margin="16">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto"/>
-                    <RowDefinition Height="Auto"/>
-                </Grid.RowDefinitions>
 
-                <Grid Grid.Row="0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <TextBlock Grid.Column="0" Text="Minimum Size:" VerticalAlignment="Center" Margin="0,0,8,0" Style="{StaticResource BodyTextStyle}"/>
-                    <TextBox Grid.Column="1" Text="{Binding MinSizeFilter}" Width="150" Style="{StaticResource FluentTextBoxStyle}"
-                             AutomationProperties.Name="Minimum Size Filter"
-                             AutomationProperties.HelpText="Enter minimum file size in bytes"
-                             ToolTip="Enter minimum file size in bytes (e.g., 1048576 for 1MB)"/>
-
-                     <TextBlock Grid.Column="2" Text="Maximum Size:" VerticalAlignment="Center" Margin="16,0,8,0" Style="{StaticResource BodyTextStyle}"/>
-                    <TextBox Grid.Column="3" Text="{Binding MaxSizeFilter}" Width="150" Style="{StaticResource FluentTextBoxStyle}"
-                             AutomationProperties.Name="Maximum Size Filter"
-                             AutomationProperties.HelpText="Enter maximum file size in bytes"
-                             ToolTip="Enter maximum file size in bytes (e.g., 104857600 for 100MB)"/>
-                </Grid>
-
-                <Grid Grid.Row="1" Margin="0,8,0,0">
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                        <ColumnDefinition Width="Auto"/>
-                        <ColumnDefinition Width="*"/>
-                    </Grid.ColumnDefinitions>
-
-                    <TextBlock Grid.Column="0" Text="Extension:" VerticalAlignment="Center" Margin="0,0,8,0" Style="{StaticResource BodyTextStyle}"/>
-                    <ComboBox Grid.Column="1" ItemsSource="{Binding AvailableExtensions}" SelectedItem="{Binding SelectedExtension}" Width="200" Style="{StaticResource FluentComboBoxStyle}"
-                              AutomationProperties.Name="Extension Filter"
-                              AutomationProperties.HelpText="Filter by file extension"
-                              ToolTip="Filter files by extension type"/>
-
-                     <TextBlock Grid.Column="2" Text="Date Modified:" VerticalAlignment="Center" Margin="16,0,8,0" Style="{StaticResource BodyTextStyle}"/>
-                    <ComboBox Grid.Column="3" Width="150" Style="{StaticResource FluentComboBoxStyle}"
-                              AutomationProperties.Name="Date Modified Filter"
-                              AutomationProperties.HelpText="Filter by date modified"
-                              ToolTip="Filter files by modification date"/>
-                </Grid>
-            </Grid>
-        </Expander>
-
-  		<Grid Grid.Row="3" Margin="16">
- 			<Grid.ColumnDefinitions>
- 				<ColumnDefinition Width="2*" MinWidth="200"/>
- 				<ColumnDefinition Width="Auto"/>
- 				<ColumnDefinition Width="3*" MinWidth="300"/>
- 			</Grid.ColumnDefinitions>
-  			<GridSplitter Grid.Column="1" Width="8" Background="{DynamicResource BorderDefault}" HorizontalAlignment="Center" ShowsPreview="True"/>
-
-            <TreeView Grid.Column="0"
-                      x:Name="TreeView"
-                      ItemsSource="{Binding RootFolder.Children}"
-                      Background="{DynamicResource WindowBackground}"
-                      Foreground="{DynamicResource TextPrimary}"
-                      Style="{StaticResource FluentTreeViewStyle}"
-                      ItemContainerStyle="{StaticResource FluentTreeViewItemStyle}"
-                      SelectedItemChanged="TreeView_SelectedItemChanged"
-                      AutomationProperties.Name="Folder Tree View"
-                      AutomationProperties.HelpText="Displays folder hierarchy and sizes"
-                      ToolTip="Navigate folder structure and view sizes">
- 				<TreeView.ItemTemplate>
- 					<HierarchicalDataTemplate ItemsSource="{Binding Children}">
-  						<StackPanel Orientation="Horizontal" Margin="4,0">
-  							<TextBlock Text="{Binding Name, Converter={StaticResource IconConverter}}" Margin="0,0,4,0" Style="{StaticResource BodyTextStyle}"/>
-  							<TextBlock Text="{Binding Name}" Margin="0,0,8,0" Style="{StaticResource BodyTextStyle}"/>
- 							<TextBlock Text="{Binding Size, Converter={StaticResource SizeConverter}}"
-                                        Opacity="0.7" Style="{StaticResource CaptionTextStyle}"
-                                        Foreground="{Binding Size, Converter={StaticResource ColorConverter}}"/>
- 						</StackPanel>
- 					</HierarchicalDataTemplate>
- 				</TreeView.ItemTemplate>
-			</TreeView>
-
-      <DataGrid Grid.Column="2"
-                      x:Name="MainDataGrid"
-                      ItemsSource="{Binding ChildrenView}"
-                      AutoGenerateColumns="False"
-                      Background="{DynamicResource WindowBackground}"
-                      Foreground="{DynamicResource TextPrimary}"
-                      Style="{StaticResource FluentDataGridStyle}"
-                      ColumnHeaderStyle="{StaticResource FluentDataGridColumnHeaderStyle}"
-                      CellStyle="{StaticResource FluentDataGridCellStyle}"
-                      RowStyle="{StaticResource FluentDataGridRowStyle}"
-                      Sorting="MainDataGrid_Sorting"
-                      IsReadOnly="True"
-                      AutomationProperties.Name="File Data Grid"
-                      AutomationProperties.HelpText="Displays files and folders with sortable columns"
-                      ToolTip="View files and folders - Right-click for options, click headers to sort">
-				<DataGrid.ContextMenu>
-					<ContextMenu Background="{DynamicResource ControlBackground}" Foreground="{DynamicResource TextPrimary}"
-                                AutomationProperties.Name="Context Menu"
-                                AutomationProperties.HelpText="Context menu for file operations">
-						<MenuItem Header="Open in Explorer" Command="{Binding OpenInExplorerCommand}"
-                                  ToolTip="Open selected item in Windows Explorer"/>
-						<Separator/>
-						<MenuItem Header="Copy Path" Command="{Binding CopyPathCommand}"
-                                  ToolTip="Copy full path to clipboard"/>
-						<MenuItem Header="Copy Name" Command="{Binding CopyNameCommand}"
-                                  ToolTip="Copy name to clipboard"/>
-						<Separator/>
-						<MenuItem Header="Toggle Columns" SubmenuOpened="ToggleColumns_SubmenuOpened"
-                                  ToolTip="Show/hide grid columns">
-						</MenuItem>
-						<Separator/>
-						<MenuItem Header="Export to CSV" Command="{Binding ExportToCsvCommand}"
-                                  ToolTip="Export current view to CSV file"/>
-						<MenuItem Header="Export to HTML" Command="{Binding ExportToHtmlCommand}"
-                                  ToolTip="Export current view to HTML file"/>
-					</ContextMenu>
-				</DataGrid.ContextMenu>
- 				<DataGrid.Columns>
- 					<DataGridTextColumn Header="Name" Binding="{Binding Name}" SortMemberPath="Name" Width="*" Visibility="Visible">
- 						<DataGridTextColumn.ElementStyle>
- 							<Style TargetType="TextBlock" BasedOn="{StaticResource BodyTextStyle}">
- 								<Setter Property="Text" Value="{Binding Name, Converter={StaticResource IconConverter}, StringFormat={}{0}  }"/>
- 							</Style>
- 						</DataGridTextColumn.ElementStyle>
- 					</DataGridTextColumn>
-  					<DataGridTextColumn Header="Size" Binding="{Binding Size, Converter={StaticResource SizeConverter}}" SortMemberPath="Size" Width="120" Visibility="Visible">
-  						<DataGridTextColumn.ElementStyle>
-  							<Style TargetType="TextBlock" BasedOn="{StaticResource SizeCellStyle}">
-  								<Setter Property="TextAlignment" Value="Right"/>
-  								<Setter Property="Margin" Value="0,0,12,0"/>
-  							</Style>
-  						</DataGridTextColumn.ElementStyle>
-                        <DataGridColumn.SortDirection>Descending</DataGridColumn.SortDirection>
-  					</DataGridTextColumn>
-  					<DataGridTextColumn Header="Path" Binding="{Binding FullPath, Mode=OneWay}" SortMemberPath="FullPath" Width="*" Visibility="Visible" IsReadOnly="True">
-  						<DataGridTextColumn.ElementStyle>
-  							<Style TargetType="TextBlock" BasedOn="{StaticResource BodyTextStyle}"/>
-  						</DataGridTextColumn.ElementStyle>
-  					</DataGridTextColumn>
- 				</DataGrid.Columns>
-			</DataGrid>
-		</Grid>
-
-  		<StatusBar Grid.Row="4" Background="{DynamicResource ControlBackground}" Foreground="{DynamicResource TextPrimary}" Padding="{StaticResource ThicknessXS}"
-                    AutomationProperties.Name="Status Bar"
-                    AutomationProperties.HelpText="Shows application status and progress">
-            <StatusBarItem>
-                <TextBlock Text="{Binding StatusMessage}" Style="{StaticResource BodyTextStyle}" />
-            </StatusBarItem>
-            <StatusBarItem HorizontalAlignment="Right">
-                <ProgressBar Width="150"
-                              Minimum="0" Maximum="100"
-                              Value="{Binding Progress, Mode=OneWay}"
-                              Style="{StaticResource FluentProgressBarStyle}"
-                              AutomationProperties.Name="Progress Bar"
-                              AutomationProperties.HelpText="Shows scanning progress"/>
-            </StatusBarItem>
-        </StatusBar>
-	</Grid>
+        <!-- Modern Status Bar (extracted) -->
+        <ui:StatusBarControl Grid.Row="4"/>
+    </Grid>
 </Window>

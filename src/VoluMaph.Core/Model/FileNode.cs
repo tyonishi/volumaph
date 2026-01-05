@@ -11,6 +11,11 @@ public sealed class FileNode : FileSystemNode
     public string Extension { get; }
 
     /// <summary>
+    /// Gets an empty read-only list of children (files never have children).
+    /// </summary>
+    public IReadOnlyList<FileSystemNode> Children => new List<FileSystemNode>();
+
+    /// <summary>
     /// Initializes a new instance of the <see cref="FileNode"/> class.
     /// </summary>
     /// <param name="fullPath">The full path to the file.</param>

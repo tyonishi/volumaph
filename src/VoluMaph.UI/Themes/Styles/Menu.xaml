@@ -1,0 +1,82 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- ContextMenu base style -->
+    <Style TargetType="ContextMenu">
+        <Setter Property="OverridesDefaultStyle" Value="True"/>
+        <Setter Property="SnapsToDevicePixels" Value="True"/>
+        <Setter Property="Padding" Value="0"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ContextMenu">
+                    <Border Background="{DynamicResource ControlBackground}"
+                            BorderBrush="{DynamicResource BorderDefault}"
+                            BorderThickness="1"
+                            CornerRadius="6"
+                            Padding="0">
+                        <ScrollViewer CanContentScroll="True" MaxHeight="600" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                            <ScrollViewer.Resources>
+                                <Style TargetType="ScrollBar">
+                                    <Setter Property="Width" Value="10"/>
+                                    <Setter Property="Background" Value="Transparent"/>
+                                    <Setter Property="Foreground" Value="{DynamicResource ScrollbarThumb}"/>
+                                </Style>
+                                <Style TargetType="Thumb">
+                                    <Setter Property="Background" Value="{DynamicResource ScrollbarThumb}"/>
+                                    <Setter Property="Height" Value="40"/>
+                                </Style>
+                            </ScrollViewer.Resources>
+                            <StackPanel IsItemsHost="True" />
+                        </ScrollViewer>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <!-- MenuItem style that reserves a left gutter painted with ControlBackground -->
+    <Style TargetType="MenuItem">
+        <Setter Property="Padding" Value="8,6"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="MenuItem">
+                    <Border x:Name="Bd" Background="Transparent">
+                        <Grid MinHeight="28">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="36"/>
+                                <!-- gutter width -->
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="24"/>
+                                <!-- optional arrow/check area -->
+                            </Grid.ColumnDefinitions>
+
+                            <!-- Left gutter filled with control background to hide default white area -->
+                            <Border Grid.Column="0" Background="{DynamicResource ControlBackground}"/>
+
+                            <!-- Icon (if set) centered in gutter -->
+                            <ContentPresenter Grid.Column="0" ContentSource="Icon"
+                                              HorizontalAlignment="Center" VerticalAlignment="Center"/>
+
+                            <!-- Header content -->
+                            <ContentPresenter Grid.Column="1" ContentSource="Header" RecognizesAccessKey="True" VerticalAlignment="Center"/>
+
+                            <!-- Submenu arrow / right area -->
+                            <ContentPresenter Grid.Column="2" ContentSource="InputGestureText" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Grid>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsEnabled" Value="False">
+                            <Setter Property="Foreground" Value="{DynamicResource TextDisabled}"/>
+                        </Trigger>
+                        <Trigger Property="IsHighlighted" Value="True">
+                            <Setter TargetName="Bd" Property="Background" Value="{DynamicResource HoverBackground}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource HighlightText}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+</ResourceDictionary>

@@ -1,0 +1,199 @@
+<UserControl x:Class="VoluMaph.UI.Controls.CommandBarControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:helpers="clr-namespace:VoluMaph.UI.Helpers"
+xmlns:local="clr-namespace:VoluMaph.UI"
+              xmlns:vc="clr-namespace:VoluMaph.UI.ValueConverters"
+              mc:Ignorable="d">
+
+    <UserControl.Resources>
+        <vc:CountToBoolConverter x:Key="CountToBoolConverter"/>
+    </UserControl.Resources>
+
+    <Border Background="{DynamicResource ControlBackground}"
+            BorderBrush="{DynamicResource DividerBrush}"
+            BorderThickness="0,0,0,1"
+            Padding="12,8">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <!-- Primary Actions Group -->
+            <StackPanel Grid.Column="0" Orientation="Horizontal">
+                <ComboBox Width="140"
+                          ItemsSource="{Binding AvailableDrives}"
+                          SelectedItem="{Binding SelectedDrive}"
+                          Style="{StaticResource FluentComboBoxStyle}"
+                          AutomationProperties.Name="Drive Selection"
+                          AutomationProperties.HelpText="Select a drive to scan"
+                          ToolTip="Select a drive to scan"
+                          VerticalAlignment="Center"/>
+
+                <Button Command="{Binding ScanCommand}"
+                        Style="{StaticResource PrimaryButtonStyle}"
+                        Margin="8,0,4,0"
+                        AutomationProperties.Name="Scan Button"
+                        AutomationProperties.HelpText="Start scanning the selected drive"
+                        ToolTip="Start scanning the selected drive (Ctrl+F5)">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                   FontSize="16"
+                                   Margin="0,0,8,0"
+                                   Text="{x:Static helpers:FluentIcons.Scan}"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="Scan" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Command="{Binding CancelCommand}"
+                        Style="{StaticResource DangerButtonStyle}"
+                        Margin="4,0"
+                        AutomationProperties.Name="Cancel Button"
+                        AutomationProperties.HelpText="Cancel the current scan"
+                        ToolTip="Cancel the current scan (Escape)">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                   FontSize="16"
+                                   Margin="0,0,8,0"
+                                   Text="{x:Static helpers:FluentIcons.Cancel}"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="Cancel" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Command="{Binding RefreshCommand}"
+                        Style="{StaticResource SecondaryButtonStyle}"
+                        Margin="4,0"
+                        AutomationProperties.Name="Refresh Button"
+                        AutomationProperties.HelpText="Refresh the current view"
+                        ToolTip="Refresh the current view (F5)">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                   FontSize="16"
+                                   Margin="0,0,8,0"
+                                   Text="{x:Static helpers:FluentIcons.Refresh}"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="Refresh" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+
+            <!-- Divider -->
+            <Rectangle Grid.Column="1" Width="1" Margin="12,4" Fill="{DynamicResource DividerBrush}"/>
+
+            <!-- Search and Filters Group (Center) -->
+            <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Left">
+                <TextBox Width="220"
+                         Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}"
+                         Style="{StaticResource FluentTextBoxStyle}"
+                         AutomationProperties.Name="Search Box"
+                         AutomationProperties.HelpText="Search files and folders by name"
+                         ToolTip="Search by file/folder name (Ctrl+F)"
+                         Name="SearchTextBox"
+                         VerticalAlignment="Center"/>
+            </StackPanel>
+
+            <!-- View Options Group -->
+            <StackPanel Grid.Column="3" Orientation="Horizontal">
+                <Button Command="{Binding ToggleThemeCommand}"
+                        Style="{StaticResource SecondaryButtonStyle}"
+                        Margin="4,0"
+                        AutomationProperties.Name="Theme Toggle Button"
+                        AutomationProperties.HelpText="Switch between light and dark theme"
+                        ToolTip="Switch between light and dark theme (Ctrl+T)">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                   FontSize="16"
+                                   Margin="0,0,8,0"
+                                   Text="{x:Static helpers:FluentIcons.Light}"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="Theme" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+                <Rectangle Width="1" Margin="8,4" Fill="{DynamicResource DividerBrush}"/>
+
+                <!-- Visualization & Color Theme Group -->
+                <StackPanel Orientation="Horizontal">
+                    <Button Command="{Binding ToggleVisualizationCommand}"
+                            Style="{StaticResource SecondaryButtonStyle}"
+                            Margin="4,0"
+                            AutomationProperties.Name="Toggle Visualization Button"
+                            AutomationProperties.HelpText="Toggle visualization panel"
+                            ToolTip="Toggle visualization panel (Treemap/Sunburst)">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                       FontSize="16"
+                                       Margin="0,0,8,0"
+                                       Text="{x:Static helpers:FluentIcons.Chart}"
+                                       VerticalAlignment="Center"/>
+                            <TextBlock Text="Visualization" VerticalAlignment="Center"/>
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </StackPanel>
+
+            <!-- Divider -->
+            <Rectangle Grid.Column="4" Width="1" Margin="8,4" Fill="{DynamicResource DividerBrush}"/>
+
+            <!-- Export Actions Group -->
+            <StackPanel Grid.Column="4" Orientation="Horizontal" Margin="8,0,0,0">
+                <Button Command="{Binding ExportToCsvCommand}"
+                        Style="{StaticResource SecondaryButtonStyle}"
+                        Margin="4,0"
+                        AutomationProperties.Name="Export to CSV Button"
+                        AutomationProperties.HelpText="Export current view to CSV file"
+                        ToolTip="Export current view to CSV file (Ctrl+E)">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                   FontSize="16"
+                                   Margin="0,0,6,0"
+                                   Text="{x:Static helpers:FluentIcons.CSV}"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="CSV" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Command="{Binding ExportToHtmlCommand}"
+                        Style="{StaticResource SecondaryButtonStyle}"
+                        Margin="4,0"
+                        AutomationProperties.Name="Export to HTML Button"
+                        AutomationProperties.HelpText="Export current view to HTML file"
+                        ToolTip="Export current view to HTML file">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                   FontSize="16"
+                                   Margin="0,0,6,0"
+                                   Text="{x:Static helpers:FluentIcons.HTML}"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="HTML" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+
+                <Button Command="{Binding ScreenshotCommand}"
+                        IsEnabled="{Binding CurrentChildren.Count, Converter={StaticResource CountToBoolConverter}}"
+                        Style="{StaticResource SecondaryButtonStyle}"
+                        Margin="4,0"
+                        AutomationProperties.Name="Screenshot Button"
+                        AutomationProperties.HelpText="Take a screenshot of the current view"
+                        ToolTip="Take a screenshot of the current view">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock FontFamily="Segoe Fluent Icons, Segoe MDL2 Assets"
+                                   FontSize="16"
+                                   Margin="0,0,6,0"
+                                   Text="{x:Static helpers:FluentIcons.Screenshot}"
+                                   VerticalAlignment="Center"/>
+                        <TextBlock Text="Screenshot" VerticalAlignment="Center"/>
+                    </StackPanel>
+                </Button>
+            </StackPanel>
+        </Grid>
+    </Border>
+</UserControl>

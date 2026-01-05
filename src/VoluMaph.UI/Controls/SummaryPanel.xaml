@@ -1,0 +1,36 @@
+<UserControl x:Class="VoluMaph.UI.Controls.SummaryPanel"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:VoluMaph.UI.Controls"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d">
+    <UserControl.Resources>
+        <converters:SizeToHumanReadableConverter x:Key="SizeConverter" xmlns:converters="clr-namespace:VoluMaph.UI.ValueConverters"/>
+    </UserControl.Resources>
+
+    <Expander Header="Summary"
+              IsExpanded="{Binding IsSummaryExpanded}"
+              Style="{StaticResource FluentExpanderStyle}"
+              AutomationProperties.Name="Summary Panel"
+              AutomationProperties.HelpText="Shows disk usage summary statistics"
+              ToolTip="Expand/collapse summary panel">
+        <Grid Margin="0,8,0,0">
+            <UniformGrid Columns="4" HorizontalAlignment="Stretch">
+                <controls:SummaryCard Title="Total Size"
+                                       Value="{Binding TotalSize, Converter={StaticResource SizeConverter}}"
+                                       Margin="0,0,8,0"/>
+                <controls:SummaryCard Title="Total Files"
+                                       Value="{Binding TotalFiles, StringFormat={}{0:N0}}"
+                                       Margin="4,0"/>
+                <controls:SummaryCard Title="Total Folders"
+                                       Value="{Binding TotalFolders, StringFormat={}{0:N0}}"
+                                       Margin="4,0"/>
+                <controls:SummaryCard Title="Largest File"
+                                       Value="{Binding LargestFileSize, Converter={StaticResource SizeConverter}}"
+                                       Subtitle="{Binding LargestFile}"
+                                       Margin="8,0,0,0"/>
+            </UniformGrid>
+        </Grid>
+    </Expander>
+</UserControl>
