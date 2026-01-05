@@ -63,12 +63,14 @@ public class DirectoryScannerTests : IDisposableTest
         CreateDirectory("subfolder");
         CreateFile("subfolder/file3.txt", 300);
 
-        var progressCount = 0;
-        var progress = new Progress<ScanProgress>(_ => progressCount++);
+        var tcs = new TaskCompletionSource<bool>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var progress = new Progress<ScanProgress>(_ => tcs.TrySetResult(true));
 
         await _scanner.ScanAsync(TestDirectory, progress);
 
-        Assert.True(progressCount > 0);
+        // Wait up to 2 seconds for the progress callback to be delivered.
+        var completed = await Task.WhenAny(tcs.Task, Task.Delay(2000));
+        Assert.True(completed == tcs.Task, "Progress callback was not invoked within timeout.");
     }
 
     [Fact]
