@@ -102,9 +102,10 @@ public partial class SunburstControl : UserControl
 
         _layout = new PolarSunburstLayout();
         _colorMapper = new SizeBasedColorMapper();
+        ColorMapper = _colorMapper;
         _nodes = new List<SunburstNode>();
 
-        ZoomPanBehavior.SetIsEnabled(this, true);
+        ZoomPanBehavior.SetIsEnabled(SunburstCanvas, true);
 
         Loaded += OnLoaded;
         SizeChanged += OnSizeChanged;
@@ -208,8 +209,8 @@ public partial class SunburstControl : UserControl
 
             context.BeginFigure(
                 PolarToCartesian(center, startAngle, outerRadius),
-                false,
-                false);
+                true,
+                true);
 
             context.ArcTo(
                 PolarToCartesian(center, endAngle, outerRadius),

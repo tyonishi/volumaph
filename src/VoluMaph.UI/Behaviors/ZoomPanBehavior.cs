@@ -12,6 +12,45 @@ public sealed class ZoomPanBehavior
     internal const double MaxZoom = 20.0;
     internal const double ZoomStep = 1.1;
 
+    public static readonly DependencyProperty ZoomLevelProperty =
+         DependencyProperty.RegisterAttached(
+             "ZoomLevel",
+             typeof(double),
+             typeof(ZoomPanBehavior),
+             new PropertyMetadata(1.0, OnZoomLevelChanged));
+
+    public static double GetZoomLevel(DependencyObject obj) =>
+        (double)obj.GetValue(ZoomLevelProperty);
+
+    public static void SetZoomLevel(DependencyObject obj, double value) =>
+        obj.SetValue(ZoomLevelProperty, value);
+
+    public static readonly DependencyProperty PanXProperty =
+        DependencyProperty.RegisterAttached(
+            "PanX",
+            typeof(double),
+            typeof(ZoomPanBehavior),
+            new PropertyMetadata(0.0, OnPanXChanged));
+
+    public static double GetPanX(DependencyObject obj) =>
+        (double)obj.GetValue(PanXProperty);
+
+    public static void SetPanX(DependencyObject obj, double value) =>
+        obj.SetValue(PanXProperty, value);
+
+    public static readonly DependencyProperty PanYProperty =
+        DependencyProperty.RegisterAttached(
+            "PanY",
+            typeof(double),
+            typeof(ZoomPanBehavior),
+            new PropertyMetadata(0.0, OnPanYChanged));
+
+    public static double GetPanY(DependencyObject obj) =>
+        (double)obj.GetValue(PanYProperty);
+
+    public static void SetPanY(DependencyObject obj, double value) =>
+        obj.SetValue(PanYProperty, value);
+
     public static readonly DependencyProperty IsEnabledProperty =
         DependencyProperty.RegisterAttached(
             "IsEnabled",
@@ -77,6 +116,19 @@ public sealed class ZoomPanBehavior
 
         _states[element] = state;
 
+        // Initialize transforms from attached properties if they were set via binding
+        try
+        {
+            state.ScaleTransform.ScaleX = GetZoomLevel(element);
+            state.ScaleTransform.ScaleY = GetZoomLevel(element);
+            state.TranslateTransform.X = GetPanX(element);
+            state.TranslateTransform.Y = GetPanY(element);
+        }
+        catch
+        {
+            // Ignore if values are not yet available
+        }
+
         element.MouseWheel += OnMouseWheel;
         element.MouseLeftButtonDown += OnMouseLeftButtonDown;
         element.MouseLeftButtonUp += OnMouseLeftButtonUp;
@@ -132,16 +184,6 @@ public sealed class ZoomPanBehavior
 
         if (Math.Abs(newScale - currentScale) < 0.001)
             return;
-
-        var animation = new DoubleAnimation
-        {
-            To = newScale,
-            Duration = TimeSpan.FromMilliseconds(200),
-            EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
-        };
-
-        state.ScaleTransform.BeginAnimation(ScaleTransform.ScaleXProperty, animation);
-        state.ScaleTransform.BeginAnimation(ScaleTransform.ScaleYProperty, animation);
     }
 
     private static void OnMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -183,8 +225,61 @@ public sealed class ZoomPanBehavior
         state.TranslateTransform.X += deltaX;
         state.TranslateTransform.Y += deltaY;
 
+        // Update attached properties so bindings (ViewModel) stay in sync
+        SetPanX(element, state.TranslateTransform.X);
+        SetPanY(element, state.TranslateTransform.Y);
+
         state.LastMousePosition = currentPosition;
         e.Handled = true;
+    }
+
+    private static void OnZoomLevelChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        if (d is not UIElement element)
+            return;
+
+        if (!_states.TryGetValue(element, out var state))
+            return;
+
+        var newScale = (double)e.NewValue;
+        newScale = Math.Clamp(newScale, MinZoom, MaxZoom);
+        var currentScale = state.ScaleTransform.ScaleX;
+        if (Math.Abs(newScale - currentScale) < 0.001)
+            return;
+
+        var animation = new DoubleAnimation
+        {
+            To = newScale,
+            Duration = TimeSpan.FromMilliseconds(200),
+            EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut }
+        };
+
+        state.ScaleTransform.BeginAnimation(ScaleTransform.ScaleXProperty, animation);
+        state.ScaleTransform.BeginAnimation(ScaleTransform.ScaleYProperty, animation);
+    }
+
+    private static void OnPanXChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        if (d is not UIElement element)
+            return;
+
+        if (!_states.TryGetValue(element, out var state))
+            return;
+
+        var newPan = (double)e.NewValue;
+        state.TranslateTransform.X = newPan;
+    }
+
+    private static void OnPanYChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        if (d is not UIElement element)
+            return;
+
+        if (!_states.TryGetValue(element, out var state))
+            return;
+
+        var newPan = (double)e.NewValue;
+        state.TranslateTransform.Y = newPan;
     }
 
     internal static ZoomPanState CreateZoomState()

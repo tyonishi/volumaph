@@ -36,6 +36,8 @@ public sealed class VisualizationViewModel : ViewModelBase
                 RaisePropertyChanged();
                 UpdateVisibleNodes();
                 UpdateAutoTheme();
+                // Update the command availability since it depends on RootFolder
+                (ToggleVisualizationModeCommand as RelayCommand)?.RaiseCanExecuteChanged();
             }
         }
     }

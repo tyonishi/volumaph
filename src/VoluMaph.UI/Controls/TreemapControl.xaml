@@ -4,7 +4,7 @@
     xmlns:ui="clr-namespace:VoluMaph.UI.Behaviors"
     xmlns:local="clr-namespace:VoluMaph.UI.Controls">
     <Grid>
-        <Border x:Name="ZoomContainer">
+        <Border x:Name="ZoomContainer" ClipToBounds="True">
             <Border.ContextMenu>
                 <ContextMenu x:Name="TreemapContextMenu">
                     <MenuItem x:Name="OpenInExplorerMenuItem"
@@ -17,7 +17,11 @@
                 </ContextMenu>
             </Border.ContextMenu>
             <Canvas x:Name="TreemapCanvas"
-                    ClipToBounds="True" />
+                    ClipToBounds="True"
+                    ui:ZoomPanBehavior.IsEnabled="True"
+                    ui:ZoomPanBehavior.ZoomLevel="{Binding DataContext.VisualizationViewModel.ZoomLevel, RelativeSource={RelativeSource AncestorType=Window}, Mode=TwoWay}"
+                    ui:ZoomPanBehavior.PanX="{Binding DataContext.VisualizationViewModel.PanX, RelativeSource={RelativeSource AncestorType=Window}, Mode=TwoWay}"
+                    ui:ZoomPanBehavior.PanY="{Binding DataContext.VisualizationViewModel.PanY, RelativeSource={RelativeSource AncestorType=Window}, Mode=TwoWay}" />
         </Border>
         <Border x:Name="TooltipBorder"
                 Background="#CC000000"

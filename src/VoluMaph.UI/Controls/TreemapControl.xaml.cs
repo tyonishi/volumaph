@@ -99,8 +99,9 @@ public partial class TreemapControl : UserControl
 
         _layout = new SquarifiedTreemapLayout();
         _colorMapper = new SizeBasedColorMapper();
+        ColorMapper = _colorMapper;
 
-        ZoomPanBehavior.SetIsEnabled(this, true);
+        ZoomPanBehavior.SetIsEnabled(TreemapCanvas, true);
 
         Loaded += OnLoaded;
         SizeChanged += OnSizeChanged;
@@ -225,6 +226,10 @@ public partial class TreemapControl : UserControl
             rectangle.Stroke = new SolidColorBrush(System.Windows.Media.Colors.White);
             rectangle.StrokeThickness = 1.5;
 
+            // Show tooltip near the mouse (convert canvas coords to control coords)
+            var posOnCanvas = e.GetPosition(TreemapCanvas);
+            ShowTooltip(node, posOnCanvas);
+
             RaiseSelectionChanged(node);
         }
     }
@@ -236,6 +241,8 @@ public partial class TreemapControl : UserControl
             rectangle.Stroke = new SolidColorBrush(
                 System.Windows.Media.Color.FromArgb(50, 0, 0, 0));
             rectangle.StrokeThickness = 0.5;
+
+            HideTooltip();
         }
     }
 
@@ -254,6 +261,59 @@ public partial class TreemapControl : UserControl
             return;
 
         SelectionChanged?.Invoke(this, null);
+    }
+
+    private void ShowTooltip(TreemapNode node, System.Windows.Point position)
+    {
+        if (node?.SourceNode != null)
+        {
+            TooltipName.Text = node.DisplayText;
+            TooltipSize.Text = FormatSize(node.SourceNode.Size);
+            TooltipPath.Text = node.SourceNode.FullPath;
+
+            // Convert position on TreemapCanvas to position relative to this control
+            var relative = TreemapCanvas.TransformToVisual(this).Transform(position);
+
+            // Position tooltip with offset and clamp to control bounds when possible
+            double left = relative.X + 10;
+            double top = relative.Y + 10;
+
+            // If ActualWidth/Height are available, clamp to avoid overflow
+            if (TooltipBorder.ActualWidth > 0 && TooltipBorder.ActualHeight > 0)
+            {
+                if (left + TooltipBorder.ActualWidth > ActualWidth)
+                {
+                    left = Math.Max(0, ActualWidth - TooltipBorder.ActualWidth - 10);
+                }
+                if (top + TooltipBorder.ActualHeight > ActualHeight)
+                {
+                    top = Math.Max(0, ActualHeight - TooltipBorder.ActualHeight - 10);
+                }
+            }
+
+            TooltipBorder.Margin = new Thickness(left, top, 0, 0);
+            TooltipBorder.Visibility = Visibility.Visible;
+        }
+    }
+
+    private void HideTooltip()
+    {
+        TooltipBorder.Visibility = Visibility.Collapsed;
+    }
+
+    private static string FormatSize(long size)
+    {
+        string[] units = { "B", "KB", "MB", "GB", "TB" };
+        double value = size;
+        int unitIndex = 0;
+
+        while (value >= 1024 && unitIndex < units.Length - 1)
+        {
+            value /= 1024;
+            unitIndex++;
+        }
+
+        return $"{value:0.##} {units[unitIndex]}";
     }
 
     private void RaiseSelectionChanged(TreemapNode node)
