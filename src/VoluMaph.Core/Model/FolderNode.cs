@@ -1,3 +1,7 @@
+using System;
+using System.IO;
+using System.Linq;
+
 namespace VoluMaph.Core.Model;
 
 /// <summary>
@@ -28,7 +32,7 @@ public sealed class FolderNode : FileSystemNode
     /// <param name="fullPath">The full path to the folder.</param>
     public FolderNode(string fullPath)
         : base(
-            name: System.IO.Path.GetFileName(fullPath),
+            name: Path.GetFileName(fullPath),
             fullPath: fullPath,
             size: 0,
             createdAt: DateTime.MinValue,
@@ -42,6 +46,14 @@ public sealed class FolderNode : FileSystemNode
     /// <param name="node">The node to add (file or subfolder).</param>
     internal void AddChild(FileSystemNode node)
     {
+        var newPath = Path.TrimEndingDirectorySeparator(node.FullPath);
+
+        if (_children.Any(existing => Path.TrimEndingDirectorySeparator(existing.FullPath)
+            .Equals(newPath, StringComparison.OrdinalIgnoreCase)))
+        {
+            return;
+        }
+
         _children.Add(node);
     }
 

@@ -21,7 +21,7 @@ public sealed class VisualizationViewModel : ViewModelBase
     private double _panX = 0.0;
     private double _panY = 0.0;
 
-    public event EventHandler<FileSystemNode>? SelectionChanged;
+    public event EventHandler<FileSystemNode?>? SelectionChanged;
 
     public ObservableCollection<FileSystemNode> VisibleNodes => _visibleNodes;
 

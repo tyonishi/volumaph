@@ -30,7 +30,7 @@ public partial class SunburstControl : UserControl
             nameof(MaxDepth),
             typeof(int),
             typeof(SunburstControl),
-            new PropertyMetadata(6));
+            new PropertyMetadata(4));
 
     public static readonly DependencyProperty CenterRadiusProperty =
         DependencyProperty.Register(
@@ -45,6 +45,19 @@ public partial class SunburstControl : UserControl
             typeof(double),
             typeof(SunburstControl),
             new PropertyMetadata(300.0));
+
+    public static readonly DependencyProperty ColorThemeProperty =
+        DependencyProperty.Register(
+            nameof(ColorTheme),
+            typeof(ColorTheme),
+            typeof(SunburstControl),
+            new PropertyMetadata(ColorTheme.Heatmap, (d, e) =>
+            {
+                if (d is SunburstControl control)
+                {
+                    control.UpdateSunburst();
+                }
+            }));
 
     public event EventHandler<SunburstNode>? SelectionChanged;
 
@@ -77,6 +90,12 @@ public partial class SunburstControl : UserControl
         set => SetValue(MaxRadiusProperty, value);
     }
 
+    public ColorTheme ColorTheme
+    {
+        get => (ColorTheme)GetValue(ColorThemeProperty);
+        set => SetValue(ColorThemeProperty, value);
+    }
+
     public SunburstControl()
     {
         InitializeComponent();
@@ -106,7 +125,10 @@ public partial class SunburstControl : UserControl
         if (SunburstCanvas == null || ActualWidth == 0 || ActualHeight == 0)
             return;
 
+        // Memory optimization: clear old elements first
+        var oldChildren = SunburstCanvas.Children.Cast<object>().ToList();
         SunburstCanvas.Children.Clear();
+        oldChildren.Clear();
         _nodes.Clear();
 
         var rootFolder = DataContext as FolderNode;
@@ -125,7 +147,7 @@ public partial class SunburstControl : UserControl
         {
             if (segment.Node is FolderNode folder)
             {
-                var color = ColorMapper?.GetColor(folder.Size, totalSize, ColorTheme.Heatmap)
+                var color = ColorMapper?.GetColor(folder.Size, totalSize, ColorTheme)
                     ?? Core.Color.Color.FromArgb(255, 100, 100, 100);
 
                 var wpfBrush = new SolidColorBrush(
@@ -147,6 +169,12 @@ public partial class SunburstControl : UserControl
         }
 
         UpdateBreadcrumb();
+        
+        // Force garbage collection for large datasets
+        if (SunburstCanvas.Children.Count > 1000)
+        {
+            GC.Collect(0, GCCollectionMode.Optimized);
+        }
     }
 
     private FrameworkElement CreateSegmentElement(SunburstNode node)

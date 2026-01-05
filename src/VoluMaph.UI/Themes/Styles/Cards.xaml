@@ -1,30 +1,81 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
 
-    <DropShadowEffect x:Key="CardDropShadow"
-                      Color="Black"
-                      Opacity="0.15"
+    <!-- Fluent Design Card Shadows -->
+    <DropShadowEffect x:Key="CardDropShadowRest"
+                      Color="{DynamicResource ShadowColor}"
+                      Opacity="0.08"
                       BlurRadius="8"
                       ShadowDepth="2"
                       Direction="270"/>
 
+    <DropShadowEffect x:Key="CardDropShadowHover"
+                      Color="{DynamicResource ShadowColor}"
+                      Opacity="0.12"
+                      BlurRadius="16"
+                      ShadowDepth="4"
+                      Direction="270"/>
+
+    <DropShadowEffect x:Key="CardDropShadowElevated"
+                      Color="{DynamicResource ShadowColor}"
+                      Opacity="0.14"
+                      BlurRadius="24"
+                      ShadowDepth="8"
+                      Direction="270"/>
+
+    <!-- Base Card Style -->
     <Style x:Key="CardStyle" TargetType="Border">
-        <Setter Property="Background" Value="{DynamicResource ControlBackground}"/>
-        <Setter Property="BorderBrush" Value="{DynamicResource BorderDefault}"/>
-        <Setter Property="BorderThickness" Value="1,1,1,1"/>
+        <Setter Property="Background" Value="{DynamicResource CardBackground}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource CardBorder}"/>
+        <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="CornerRadius" Value="8"/>
-        <Setter Property="Padding" Value="12,8"/>
-        <Setter Property="Margin" Value="12"/>
-        <Setter Property="Effect" Value="{StaticResource CardDropShadow}"/>
+        <Setter Property="Padding" Value="16,12"/>
+        <Setter Property="Margin" Value="8"/>
+        <Setter Property="Effect" Value="{StaticResource CardDropShadowRest}"/>
     </Style>
 
+    <!-- Summary Card Style -->
     <Style x:Key="SummaryCardStyle" TargetType="Border" BasedOn="{StaticResource CardStyle}">
-        <Setter Property="Padding" Value="24,12"/>
-        <Setter Property="Margin" Value="16"/>
+        <Setter Property="Padding" Value="20,16"/>
+        <Setter Property="Margin" Value="4"/>
+        <Setter Property="MinHeight" Value="100"/>
     </Style>
 
-    <Style x:Key="FilterCardStyle" TargetType="Border" BasedOn="{StaticResource CardStyle}">
+    <!-- Interactive Card Style (with hover effect) -->
+    <Style x:Key="InteractiveCardStyle" TargetType="Border" BasedOn="{StaticResource CardStyle}">
+        <Setter Property="Cursor" Value="Hand"/>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="{DynamicResource HoverBackground}"/>
+                <Setter Property="Effect" Value="{StaticResource CardDropShadowHover}"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <!-- Filter Panel Card Style -->
+    <Style x:Key="FilterCardStyle" TargetType="Border">
+        <Setter Property="Background" Value="{DynamicResource SubtleBackground}"/>
+        <Setter Property="BorderBrush" Value="Transparent"/>
+        <Setter Property="BorderThickness" Value="0"/>
+        <Setter Property="CornerRadius" Value="6"/>
+        <Setter Property="Padding" Value="16,12"/>
         <Setter Property="Margin" Value="0"/>
+    </Style>
+
+    <!-- Elevated Card Style -->
+    <Style x:Key="ElevatedCardStyle" TargetType="Border" BasedOn="{StaticResource CardStyle}">
+        <Setter Property="Effect" Value="{StaticResource CardDropShadowElevated}"/>
+        <Setter Property="BorderThickness" Value="0"/>
+    </Style>
+
+    <!-- Outlined Card Style (no shadow) -->
+    <Style x:Key="OutlinedCardStyle" TargetType="Border">
+        <Setter Property="Background" Value="Transparent"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource BorderDefault}"/>
+        <Setter Property="BorderThickness" Value="1"/>
+        <Setter Property="CornerRadius" Value="8"/>
+        <Setter Property="Padding" Value="16,12"/>
+        <Setter Property="Margin" Value="8"/>
     </Style>
 
 </ResourceDictionary>

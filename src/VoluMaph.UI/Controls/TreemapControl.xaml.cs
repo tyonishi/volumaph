@@ -31,19 +31,32 @@ public partial class TreemapControl : UserControl
             typeof(TreemapControl),
             new PropertyMetadata(null));
 
-    public static readonly DependencyProperty MaxDepthProperty =
+     public static readonly DependencyProperty MaxDepthProperty =
         DependencyProperty.Register(
             nameof(MaxDepth),
             typeof(int),
             typeof(TreemapControl),
-            new PropertyMetadata(6));
+            new PropertyMetadata(4));
 
     public static readonly DependencyProperty MinDisplaySizeProperty =
         DependencyProperty.Register(
             nameof(MinDisplaySize),
             typeof(double),
             typeof(TreemapControl),
-            new PropertyMetadata(100.0));
+            new PropertyMetadata(500.0));
+
+    public static readonly DependencyProperty ColorThemeProperty =
+        DependencyProperty.Register(
+            nameof(ColorTheme),
+            typeof(ColorTheme),
+            typeof(TreemapControl),
+            new PropertyMetadata(ColorTheme.Heatmap, (d, e) =>
+            {
+                if (d is TreemapControl control)
+                {
+                    control.UpdateTreemap();
+                }
+            }));
 
     public event EventHandler<TreemapNode>? SelectionChanged;
 
@@ -72,6 +85,12 @@ public partial class TreemapControl : UserControl
     {
         get => (double)GetValue(MinDisplaySizeProperty);
         set => SetValue(MinDisplaySizeProperty, value);
+    }
+
+    public ColorTheme ColorTheme
+    {
+        get => (ColorTheme)GetValue(ColorThemeProperty);
+        set => SetValue(ColorThemeProperty, value);
     }
 
     public TreemapControl()
@@ -110,7 +129,10 @@ public partial class TreemapControl : UserControl
         if (TreemapCanvas == null || ActualWidth == 0 || ActualHeight == 0)
             return;
 
+        // Memory optimization: clear old elements first
+        var oldChildren = TreemapCanvas.Children.Cast<object>().ToList();
         TreemapCanvas.Children.Clear();
+        oldChildren.Clear();
 
         var rootFolder = DataContext as FolderNode;
 
@@ -119,6 +141,12 @@ public partial class TreemapControl : UserControl
 
         var bounds = new Core.Layouts.Rect(0, 0, ActualWidth, ActualHeight);
         CalculateTreemapRecursive(rootFolder, bounds, 0, rootFolder.Size);
+        
+        // Force garbage collection for large datasets
+        if (TreemapCanvas.Children.Count > 1000)
+        {
+            GC.Collect(0, GCCollectionMode.Optimized);
+        }
     }
 
     private void CalculateTreemapRecursive(
@@ -133,7 +161,7 @@ public partial class TreemapControl : UserControl
         if (bounds.Width * bounds.Height < MinDisplaySize)
             return;
 
-        var color = ColorMapper?.GetColor(folder.Size, totalSize, ColorTheme.Heatmap)
+        var color = ColorMapper?.GetColor(folder.Size, totalSize, ColorTheme)
             ?? Core.Color.Color.FromArgb(255, 100, 100, 100);
 
         var wpfBrush = new SolidColorBrush(
